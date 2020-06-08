@@ -7,7 +7,11 @@ class Graphics {
     this.spritesheet = document.getElementById("spritesheet");
   }
 
-  drawIcon(iconName, x, y, scale = 1, rotate = 0, cx = -1, cy = -1) {
+  clearScreen() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  drawIcon(iconName, x, y, scale = 1, rotate = 0, cx = -1, cy = -1, tint = "") {
     let icon = botbIcon.getIcon(iconName);
     let xpos = cx;
     let ypos = cy;
@@ -35,6 +39,11 @@ class Graphics {
       icon.height * scale
     );
 
+    if (tint) {
+      this.ctx.fillStyle = tint;
+      this.ctx.fillRect(-xpos, -ypos, icon.width * scale, icon.height * scale);
+    }
+
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 }
@@ -42,19 +51,30 @@ class Graphics {
 let graphics = new Graphics();
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("dom loaded");
-
   var testRotate = 0;
   var testScale = 0;
+  var tintTest = 0;
 
-  function testAnim() {
+  function gameLoop() {
     testRotate += 2;
-    testScale = Math.sin(testRotate / 50) * 3;
+    testScale = 1 + Math.sin(testRotate / 50) * 3;
 
-    graphics.drawIcon("pixel", 100, 100, testScale, testRotate);
+    tintTest = Math.abs(Math.sin(testRotate / 50));
 
-    window.requestAnimationFrame(testAnim);
+    graphics.clearScreen();
+    graphics.drawIcon(
+      "ansi",
+      200 + Math.sin(testRotate / 50) * 100,
+      200,
+      testScale,
+      testRotate,
+      -1,
+      -1,
+      "rgba(50,20,100, " + tintTest + ")"
+    );
+
+    window.requestAnimationFrame(gameLoop);
   }
 
-  testAnim();
+  gameLoop();
 });
