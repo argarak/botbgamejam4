@@ -22,8 +22,20 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 50),
         tileY: Math.floor(Math.random() * 50),
-        intensity: 10,
-        color: [25, 250, 20]
+        intensity: 0.4,
+        color: [0, 0, 0]
+      },
+      {
+        tileX: Math.floor(Math.random() * 50),
+        tileY: Math.floor(Math.random() * 50),
+        intensity: 0.4,
+        color: [0, 0, 0]
+      },
+      {
+        tileX: Math.floor(Math.random() * 50),
+        tileY: Math.floor(Math.random() * 50),
+        intensity: 0.4,
+        color: [0, 0, 0]
       }
     ];
   }
@@ -71,30 +83,26 @@ class Graphics {
     for (let room of this.rooms) {
       for (let rowindex = 0; rowindex < room.height; rowindex++) {
         for (let tileindex = 0; tileindex < room.width; tileindex++) {
+          let alpha = 1;
           for (let source of this.lightsources) {
             let xpos =
               (1 + room.startTileX) * this.tileSize + tileindex * this.tileSize;
             let ypos =
               (1 + room.startTileX) * this.tileSize + rowindex * this.tileSize;
 
-            let alpha = 0.8;
-
             let xtile = xpos / this.tileSize;
             let ytile = ypos / this.tileSize;
 
-            alpha =
-              1 -
-              1 /
-                Math.sqrt(
-                  Math.abs(
-                    (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
-                  )
-                );
-            // checking if the tile IS the light source
-            if (
-              xpos / this.tileSize - 1 == source.tileX &&
-              ypos / this.tileSize - 1 == source.tileY
-            ) {
+            alpha -=
+              source.intensity /
+              Math.sqrt(
+                Math.abs(
+                  (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
+                )
+              );
+
+            // if the tile IS the source, make it full brightness
+            if (source.tileX == xtile && source.tileY == ytile) {
               alpha = 0;
             }
 
@@ -106,7 +114,15 @@ class Graphics {
               0,
               -1,
               -1,
-              "rgba(0,0,0, " + alpha + "  )"
+              "rgba(" +
+                source.color[0] +
+                ", " +
+                source.color[1] +
+                "  , " +
+                source.color[2] +
+                " , " +
+                alpha +
+                "  )"
             );
           }
         }
@@ -128,7 +144,7 @@ class Player {
     this.speedY = 0;
     this.acceleration = 5;
     this.friction = 1;
-    this.maxSpeedLimit = 20;
+    this.maxSpeedLimit = 40;
     this.minSpeedLimit = -this.maxSpeedLimit;
 
     this.movingUp = false;
