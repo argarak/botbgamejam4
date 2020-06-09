@@ -6,42 +6,46 @@ class Graphics {
 
     this.spritesheet = document.getElementById("spritesheet");
     this.tileSize = 16;
-    this.testIcon = botbIcon.random16icon();
 
     this.rooms = [
       {
         startTileX: 0,
         startTileY: 0,
-        width: 50,
-        height: 50,
-        icon: this.testIcon
+        width: 20,
+        height: 20,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 20,
+        startTileY: 10,
+        width: 10,
+        height: 40,
+        icon: botbIcon.random16icon()
       }
     ];
 
     this.lightsources = [
       {
-        tileX: Math.floor(Math.random() * 50),
-        tileY: Math.floor(Math.random() * 50),
-        intensity: 0.4,
-        color: [0, 0, 0]
+        tileX: Math.floor(Math.random() * 20),
+        tileY: Math.floor(Math.random() * 20),
+        intensity: 0.4
       },
       {
-        tileX: Math.floor(Math.random() * 50),
-        tileY: Math.floor(Math.random() * 50),
-        intensity: 0.4,
-        color: [0, 0, 0]
+        tileX: Math.floor(Math.random() * 20),
+        tileY: Math.floor(Math.random() * 20),
+        intensity: 0.9
       },
       {
-        tileX: Math.floor(Math.random() * 50),
-        tileY: Math.floor(Math.random() * 50),
-        intensity: 0.4,
-        color: [0, 0, 0]
+        tileX: Math.floor(Math.random() * 20),
+        tileY: Math.floor(Math.random() * 20),
+        intensity: 0.3
       }
     ];
   }
 
   clearScreen() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "#000";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   drawIcon(icon, x, y, scale = 1, rotate = 0, cx = -1, cy = -1, tint = "") {
@@ -88,7 +92,7 @@ class Graphics {
             let xpos =
               (1 + room.startTileX) * this.tileSize + tileindex * this.tileSize;
             let ypos =
-              (1 + room.startTileX) * this.tileSize + rowindex * this.tileSize;
+              (1 + room.startTileY) * this.tileSize + rowindex * this.tileSize;
 
             let xtile = xpos / this.tileSize;
             let ytile = ypos / this.tileSize;
@@ -114,15 +118,7 @@ class Graphics {
               0,
               -1,
               -1,
-              "rgba(" +
-                source.color[0] +
-                ", " +
-                source.color[1] +
-                "  , " +
-                source.color[2] +
-                " , " +
-                alpha +
-                "  )"
+              "rgba(0,0,0," + alpha + ")"
             );
           }
         }
