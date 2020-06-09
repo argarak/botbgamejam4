@@ -5,12 +5,23 @@ class Graphics {
     this.ctx.imageSmoothingEnabled = false;
 
     this.spritesheet = document.getElementById("spritesheet");
+    this.tileSize = 16;
     this.testIcon = botbIcon.random16icon();
+
+    this.rooms = [
+      {
+        startTileX: 0,
+        startTileY: 0,
+        width: 50,
+        height: 50,
+        icon: this.testIcon
+      }
+    ];
 
     this.lightsources = [
       {
-        x: 0,
-        y: 0,
+        tileX: Math.floor(Math.random() * 50),
+        tileY: Math.floor(Math.random() * 50),
         intensity: 10,
         color: [25, 250, 20]
       }
@@ -57,59 +68,50 @@ class Graphics {
   }
 
   drawMap() {
-    let maptest = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ];
+    for (let room of this.rooms) {
+      for (let rowindex = 0; rowindex < room.height; rowindex++) {
+        for (let tileindex = 0; tileindex < room.width; tileindex++) {
+          for (let source of this.lightsources) {
+            let xpos =
+              (1 + room.startTileX) * this.tileSize + tileindex * this.tileSize;
+            let ypos =
+              (1 + room.startTileX) * this.tileSize + rowindex * this.tileSize;
 
-    for (let rowindex = 0; rowindex < maptest.length; rowindex++) {
-      for (
-        let tileindex = 0;
-        tileindex < maptest[rowindex].length;
-        tileindex++
-      ) {
-        switch (maptest[rowindex][tileindex]) {
-          case 1:
+            let alpha = 0.8;
+
+            let xtile = xpos / this.tileSize;
+            let ytile = ypos / this.tileSize;
+
+            alpha =
+              1 -
+              1 /
+                Math.sqrt(
+                  Math.abs(
+                    (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
+                  )
+                );
+            // checking if the tile IS the light source
+            if (
+              xpos / this.tileSize - 1 == source.tileX &&
+              ypos / this.tileSize - 1 == source.tileY
+            ) {
+              alpha = 0;
+            }
+
             this.drawIcon(
-              this.testIcon,
-              16 + tileindex * 16,
-              16 + rowindex * 16,
+              room.icon,
+              xpos,
+              ypos,
               1,
               0,
               -1,
-              -1
-            );
-            break;
-          case 0:
-            this.drawIcon(
-              this.testIcon,
-              16 + tileindex * 16,
-              16 + rowindex * 16,
-              1,
-              0,
               -1,
-              -1,
-              "rgba(0,0,0,0.8)"
+              "rgba(0,0,0, " + alpha + "  )"
             );
-            break;
+          }
         }
       }
     }
-
-    //this.drawIcon(botbIcon.random16icon(), 0, 0, 1);
   }
 }
 
@@ -183,13 +185,11 @@ class Player {
       }
     }
 
-    if (this.xpos > 0) {
-      this.xpos += this.speedX / 10;
-    }
+    this.xpos += this.speedX / 10;
+    this.ypos += this.speedY / 10;
 
-    if (this.ypos > 0) {
-      this.ypos += this.speedY / 10;
-    }
+    graphics.lightsources[0].tileX = Math.round(this.xpos / graphics.tileSize);
+    graphics.lightsources[0].tileY = Math.round(this.ypos / graphics.tileSize);
   }
 
   draw() {
