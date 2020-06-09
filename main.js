@@ -11,8 +11,7 @@ class Graphics {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  drawIcon(iconName, x, y, scale = 1, rotate = 0, cx = -1, cy = -1, tint = "") {
-    let icon = botbIcon.getIcon(iconName);
+  drawIcon(icon, x, y, scale = 1, rotate = 0, cx = -1, cy = -1, tint = "") {
     let xpos = cx;
     let ypos = cy;
 
@@ -55,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
   var testScale = 0;
   var tintTest = 0;
 
+  let randIcon = botbIcon.random16icon();
+
   function gameLoop() {
     testRotate += 2;
     testScale = 1 + Math.sin(testRotate / 50) * 3;
@@ -63,14 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     graphics.clearScreen();
     graphics.drawIcon(
-      "ansi",
+      randIcon,
       200 + Math.sin(testRotate / 50) * 100,
       200,
       testScale,
       testRotate,
       -1,
       -1,
-      "rgba(50,20,100, " + tintTest + ")"
+      "rgba(0,0,0, " + tintTest + ")"
     );
 
     window.requestAnimationFrame(gameLoop);
