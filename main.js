@@ -135,10 +135,10 @@ class Graphics {
   drawMap() {
     for (let room of this.rooms) {
       if (
-        this.camX < (room.startTileX + room.width) * this.tileSize &&
-        this.camX > (room.startTileX + 1) * this.tileSize &&
-        this.camY < (room.startTileY + room.height) * this.tileSize &&
-        this.camY > (room.startTileY + 1) * this.tileSize
+        this.camX - 8 < (room.startTileX + room.width) * this.tileSize &&
+        this.camX - 8 > room.startTileX * this.tileSize &&
+        this.camY - 8 < (room.startTileY + room.height) * this.tileSize &&
+        this.camY - 8 > room.startTileY * this.tileSize
       ) {
         if (this.currentRoomNameValue !== "room of " + room.icon.name) {
           this.currentRoom = room;
@@ -302,6 +302,7 @@ class Player {
         (graphics.currentRoom.startTileX + graphics.currentRoom.width) *
           graphics.tileSize
     ) {
+      let preventMovement = true;
       for (let room of graphics.rooms) {
         if (
           this.xpos <
@@ -309,7 +310,8 @@ class Player {
               graphics.tileSize &&
           this.checkRoomBounds(room, this.xpos - graphics.tileSize, this.ypos)
         ) {
-          return;
+          preventMovement = false;
+          break;
         }
 
         if (
@@ -318,10 +320,14 @@ class Player {
               graphics.tileSize &&
           this.checkRoomBounds(room, this.xpos + graphics.tileSize, this.ypos)
         ) {
-          return;
+          preventMovement = false;
+          break;
         }
       }
-      this.xpos = graphics.lightsources[0].tileX * graphics.tileSize;
+      if (preventMovement) {
+        this.xpos = Math.round(this.xpos / 16) * 16;
+        //this.xpos = graphics.lightsources[0].tileX * graphics.tileSize;
+      }
     }
 
     if (
@@ -336,15 +342,21 @@ class Player {
       // otherwise set ypos to the current player light source
       // same for moving down but for the player y position + 16
 
+      let preventMovement = true;
       for (let room of graphics.rooms) {
         if (
           this.ypos <
             (graphics.currentRoom.startTileY +
               graphics.currentRoom.height / 2) *
               graphics.tileSize &&
-          this.checkRoomBounds(room, this.xpos, this.ypos - graphics.tileSize)
+          this.checkRoomBounds(
+            room,
+            this.xpos,
+            Math.floor(this.ypos) - graphics.tileSize
+          )
         ) {
-          return;
+          preventMovement = false;
+          break;
         }
 
         if (
@@ -354,10 +366,14 @@ class Player {
               graphics.tileSize &&
           this.checkRoomBounds(room, this.xpos, this.ypos + graphics.tileSize)
         ) {
-          return;
+          preventMovement = false;
+          break;
         }
       }
-      this.ypos = graphics.lightsources[0].tileY * graphics.tileSize;
+      if (preventMovement) {
+        this.ypos = Math.round(this.ypos / 16) * 16;
+        //this.ypos = graphics.lightsources[0].tileY * graphics.tileSize;
+      }
     }
   }
 
