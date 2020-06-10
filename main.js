@@ -24,6 +24,13 @@ class Graphics {
         width: 10,
         height: 40,
         icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 30,
+        startTileY: 10,
+        width: 50,
+        height: 5,
+        icon: botbIcon.random16icon()
       }
     ];
 
@@ -44,6 +51,8 @@ class Graphics {
         intensity: 0.3
       }
     ];
+
+    this.roomNameElement = document.getElementById("roomName");
   }
 
   clearScreen() {
@@ -102,6 +111,17 @@ class Graphics {
 
   drawMap() {
     for (let room of this.rooms) {
+      if (
+        this.camX < (room.startTileX + room.width) * this.tileSize &&
+        this.camX > room.startTileX * this.tileSize &&
+        this.camY < (room.startTileY + room.height) * this.tileSize &&
+        this.camY > room.startTileY * this.tileSize
+      ) {
+        if (this.roomNameElement.innerHTML !== "room of " + room.icon.name) {
+          this.roomNameElement.innerHTML = "room of " + room.icon.name;
+        }
+      }
+
       for (let rowindex = 0; rowindex < room.height; rowindex++) {
         for (let tileindex = 0; tileindex < room.width; tileindex++) {
           let alpha = 1;
@@ -119,7 +139,7 @@ class Graphics {
               Math.sqrt(
                 Math.abs(
                   (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
-                )
+                ) * 5
               );
 
             // if the tile IS the source, make it full brightness
@@ -165,7 +185,7 @@ class Player {
     this.movingLeft = false;
     this.movingRight = false;
 
-    this.debug = true;
+    this.debug = false;
   }
 
   updatePositions() {
