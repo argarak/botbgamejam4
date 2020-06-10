@@ -31,6 +31,27 @@ class Graphics {
         width: 50,
         height: 5,
         icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 0,
+        startTileY: -10,
+        width: 50,
+        height: 10,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 50,
+        startTileY: -10,
+        width: 10,
+        height: 30,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 20,
+        startTileY: 0,
+        width: 10,
+        height: 10,
+        icon: botbIcon.random16icon()
       }
     ];
 
@@ -38,7 +59,7 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 0.4
+        intensity: 2
       },
       {
         tileX: Math.floor(Math.random() * 20),
@@ -53,6 +74,8 @@ class Graphics {
     ];
 
     this.roomNameElement = document.getElementById("roomName");
+    this.currentRoomNameValue = "";
+    this.currentRoom = this.rooms[0];
   }
 
   clearScreen() {
@@ -113,12 +136,14 @@ class Graphics {
     for (let room of this.rooms) {
       if (
         this.camX < (room.startTileX + room.width) * this.tileSize &&
-        this.camX > room.startTileX * this.tileSize &&
+        this.camX > (room.startTileX + 1) * this.tileSize &&
         this.camY < (room.startTileY + room.height) * this.tileSize &&
-        this.camY > room.startTileY * this.tileSize
+        this.camY > (room.startTileY + 1) * this.tileSize
       ) {
-        if (this.roomNameElement.innerHTML !== "room of " + room.icon.name) {
-          this.roomNameElement.innerHTML = "room of " + room.icon.name;
+        if (this.currentRoomNameValue !== "room of " + room.icon.name) {
+          this.currentRoom = room;
+          this.currentRoomNameValue = "room of " + room.icon.name;
+          this.roomNameElement.innerHTML = this.currentRoomNameValue;
         }
       }
 
@@ -244,8 +269,101 @@ class Player {
     graphics.lightsources[0].tileY = Math.round(this.ypos / graphics.tileSize);
   }
 
+  // return true if the given x and y position is in bounds given a specific room
+  // false if out of bounds
+  checkRoomBounds(room, xpos, ypos) {
+    if (
+      xpos < (room.startTileX + 1) * graphics.tileSize ||
+      xpos > (room.startTileX + room.width) * graphics.tileSize
+    ) {
+      return false;
+    }
+
+    if (
+      ypos < (room.startTileY + 1) * graphics.tileSize ||
+      ypos > (room.startTileY + room.height) * graphics.tileSize
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  checkCollision() {
+    if (this.debug) {
+      document.getElementById("posX").innerHTML =
+        "player.xpos = " + this.xpos.toFixed(0);
+      document.getElementById("posY").innerHTML =
+        "player.ypos = " + this.ypos.toFixed(0);
+    }
+    if (
+      this.xpos < (graphics.currentRoom.startTileX + 1) * graphics.tileSize ||
+      this.xpos >
+        (graphics.currentRoom.startTileX + graphics.currentRoom.width) *
+          graphics.tileSize
+    ) {
+      for (let room of graphics.rooms) {
+        if (
+          this.xpos <
+            (graphics.currentRoom.startTileX + graphics.currentRoom.width / 2) *
+              graphics.tileSize &&
+          this.checkRoomBounds(room, this.xpos - graphics.tileSize, this.ypos)
+        ) {
+          return;
+        }
+
+        if (
+          this.xpos >
+            (graphics.currentRoom.startTileX + graphics.currentRoom.width / 2) *
+              graphics.tileSize &&
+          this.checkRoomBounds(room, this.xpos + graphics.tileSize, this.ypos)
+        ) {
+          return;
+        }
+      }
+      this.xpos = graphics.lightsources[0].tileX * graphics.tileSize;
+    }
+
+    if (
+      this.ypos < (graphics.currentRoom.startTileY + 1) * graphics.tileSize ||
+      this.ypos >
+        (graphics.currentRoom.startTileY + graphics.currentRoom.height) *
+          graphics.tileSize
+    ) {
+      // check if player is moving up or down
+      // if moving up check bounds between all rooms for player y position - 16
+      // if valid bounds don't do anything and return
+      // otherwise set ypos to the current player light source
+      // same for moving down but for the player y position + 16
+
+      for (let room of graphics.rooms) {
+        if (
+          this.ypos <
+            (graphics.currentRoom.startTileY +
+              graphics.currentRoom.height / 2) *
+              graphics.tileSize &&
+          this.checkRoomBounds(room, this.xpos, this.ypos - graphics.tileSize)
+        ) {
+          return;
+        }
+
+        if (
+          this.ypos >
+            (graphics.currentRoom.startTileY +
+              graphics.currentRoom.height / 2) *
+              graphics.tileSize &&
+          this.checkRoomBounds(room, this.xpos, this.ypos + graphics.tileSize)
+        ) {
+          return;
+        }
+      }
+      this.ypos = graphics.lightsources[0].tileY * graphics.tileSize;
+    }
+  }
+
   draw() {
     this.updatePositions();
+    this.checkCollision();
     graphics.drawIcon(this.icon, this.xpos, this.ypos);
   }
 }
@@ -289,11 +407,9 @@ document.addEventListener("keyup", function(event) {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  graphics.drawMap();
   function gameLoop() {
     graphics.clearScreen();
     graphics.drawMap();
-    //graphics.moveCamera(player.xpos, player.ypos);
     player.draw();
     window.requestAnimationFrame(gameLoop);
   }
