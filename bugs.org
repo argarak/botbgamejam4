@@ -1,0 +1,5 @@
+
+** current list of minor bugs:
+
+- players collide with corners between 2+ rooms, probably wontfix
+- if pushing up against a wall and moving in the x axis, it is possible to get stuck in the edge between rooms

@@ -10,56 +10,60 @@ class Graphics {
     this.camY = 0;
     this.camX = 0;
 
-    this.rooms = [
-      {
-        startTileX: 0,
-        startTileY: 0,
-        width: 20,
-        height: 20,
-        icon: botbIcon.random16icon()
-      },
-      {
-        startTileX: 20,
-        startTileY: 10,
-        width: 10,
-        height: 40,
-        icon: botbIcon.random16icon()
-      },
-      {
-        startTileX: 30,
-        startTileY: 10,
-        width: 50,
-        height: 5,
-        icon: botbIcon.random16icon()
-      },
-      {
-        startTileX: 0,
-        startTileY: -10,
-        width: 50,
-        height: 10,
-        icon: botbIcon.random16icon()
-      },
-      {
-        startTileX: 50,
-        startTileY: -10,
-        width: 10,
-        height: 30,
-        icon: botbIcon.random16icon()
-      },
-      {
-        startTileX: 20,
-        startTileY: 0,
-        width: 10,
-        height: 10,
-        icon: botbIcon.random16icon()
-      }
-    ];
+    this.lighting = true;
+
+    // this.rooms = [
+    //   {
+    //     startTileX: 0,
+    //     startTileY: 0,
+    //     width: 20,
+    //     height: 20,
+    //     icon: botbIcon.random16icon()
+    //   },
+    //   {
+    //     startTileX: 20,
+    //     startTileY: 10,
+    //     width: 10,
+    //     height: 40,
+    //     icon: botbIcon.random16icon()
+    //   },
+    //   {
+    //     startTileX: 30,
+    //     startTileY: 10,
+    //     width: 50,
+    //     height: 5,
+    //     icon: botbIcon.random16icon()
+    //   },
+    //   {
+    //     startTileX: 0,
+    //     startTileY: -10,
+    //     width: 50,
+    //     height: 10,
+    //     icon: botbIcon.random16icon()
+    //   },
+    //   {
+    //     startTileX: 50,
+    //     startTileY: -10,
+    //     width: 10,
+    //     height: 30,
+    //     icon: botbIcon.random16icon()
+    //   },
+    //   {
+    //     startTileX: 20,
+    //     startTileY: 0,
+    //     width: 10,
+    //     height: 10,
+    //     icon: botbIcon.random16icon()
+    //   }
+    // ];
+
+    this.rooms = roomgen.generate();
 
     this.lightsources = [
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 2
+        intensity: 0.5
       },
       {
         tileX: Math.floor(Math.random() * 20),
@@ -88,11 +92,11 @@ class Graphics {
     let ypos = cy;
 
     if (cx === -1) {
-      xpos = icon.width * scale / 2;
+      cx = icon.width * scale / 2;
     }
 
     if (cy === -1) {
-      ypos = icon.height * scale / 2;
+      cy = icon.height * scale / 2;
     }
 
     this.ctx.setTransform(
@@ -125,13 +129,6 @@ class Graphics {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  moveCamera(x, y) {
-    var camX = -x + this.canvas.width / 2;
-    var camY = -y + this.canvas.height / 2;
-
-    this.ctx.translate(camX, camY);
-  }
-
   drawMap() {
     for (let room of this.rooms) {
       if (
@@ -159,16 +156,20 @@ class Graphics {
             let xtile = xpos / this.tileSize;
             let ytile = ypos / this.tileSize;
 
-            alpha -=
-              source.intensity /
-              Math.sqrt(
-                Math.abs(
-                  (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
-                ) * 5
-              );
+            if (this.lighting) {
+              alpha -=
+                source.intensity /
+                Math.sqrt(
+                  Math.abs(
+                    (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
+                  ) * 5
+                );
 
-            // if the tile IS the source, make it full brightness
-            if (source.tileX == xtile && source.tileY == ytile) {
+              // if the tile IS the source, make it full brightness
+              if (source.tileX == xtile && source.tileY == ytile) {
+                alpha = 0;
+              }
+            } else {
               alpha = 0;
             }
 
@@ -289,6 +290,7 @@ class Player {
     return true;
   }
 
+  // writing collisions for this was a long and hard process :(
   checkCollision() {
     if (this.debug) {
       document.getElementById("posX").innerHTML =
@@ -336,12 +338,6 @@ class Player {
         (graphics.currentRoom.startTileY + graphics.currentRoom.height) *
           graphics.tileSize
     ) {
-      // check if player is moving up or down
-      // if moving up check bounds between all rooms for player y position - 16
-      // if valid bounds don't do anything and return
-      // otherwise set ypos to the current player light source
-      // same for moving down but for the player y position + 16
-
       let preventMovement = true;
       for (let room of graphics.rooms) {
         if (
@@ -378,6 +374,10 @@ class Player {
   }
 
   draw() {
+    if (this.speedX !== 0 || this.speedY !== 0) {
+      graphics.clearScreen();
+      graphics.drawMap();
+    }
     this.updatePositions();
     this.checkCollision();
     graphics.drawIcon(this.icon, this.xpos, this.ypos);
@@ -423,9 +423,10 @@ document.addEventListener("keyup", function(event) {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  graphics.drawMap();
+
   function gameLoop() {
-    graphics.clearScreen();
-    graphics.drawMap();
+    //graphics.drawMap();
     player.draw();
     window.requestAnimationFrame(gameLoop);
   }
