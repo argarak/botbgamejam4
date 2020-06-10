@@ -7,6 +7,9 @@ class Graphics {
     this.spritesheet = document.getElementById("spritesheet");
     this.tileSize = 16;
 
+    this.camY = 0;
+    this.camX = 0;
+
     this.rooms = [
       {
         startTileX: 0,
@@ -60,7 +63,14 @@ class Graphics {
       ypos = icon.height * scale / 2;
     }
 
-    this.ctx.setTransform(scale, 0, 0, scale, x, y);
+    this.ctx.setTransform(
+      scale,
+      0,
+      0,
+      scale,
+      this.canvas.width / 2 + (x - this.camX),
+      this.canvas.height / 2 + (y - this.camY)
+    );
     this.ctx.rotate(rotate * Math.PI / 180);
 
     this.ctx.drawImage(
@@ -81,6 +91,13 @@ class Graphics {
     }
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  moveCamera(x, y) {
+    var camX = -x + this.canvas.width / 2;
+    var camY = -y + this.canvas.height / 2;
+
+    this.ctx.translate(camX, camY);
   }
 
   drawMap() {
@@ -118,7 +135,7 @@ class Graphics {
               0,
               -1,
               -1,
-              "rgba(0,0,0," + alpha + ")"
+              "rgba(0,0,0," + alpha.toFixed(1) + ")"
             );
           }
         }
@@ -140,7 +157,7 @@ class Player {
     this.speedY = 0;
     this.acceleration = 5;
     this.friction = 1;
-    this.maxSpeedLimit = 40;
+    this.maxSpeedLimit = 30;
     this.minSpeedLimit = -this.maxSpeedLimit;
 
     this.movingUp = false;
@@ -200,6 +217,9 @@ class Player {
     this.xpos += this.speedX / 10;
     this.ypos += this.speedY / 10;
 
+    graphics.camX = this.xpos;
+    graphics.camY = this.ypos;
+
     graphics.lightsources[0].tileX = Math.round(this.xpos / graphics.tileSize);
     graphics.lightsources[0].tileY = Math.round(this.ypos / graphics.tileSize);
   }
@@ -253,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function gameLoop() {
     graphics.clearScreen();
     graphics.drawMap();
+    //graphics.moveCamera(player.xpos, player.ypos);
     player.draw();
     window.requestAnimationFrame(gameLoop);
   }
