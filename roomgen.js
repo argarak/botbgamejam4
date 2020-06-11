@@ -1,6 +1,6 @@
 class RoomGen {
   constructor() {
-    this.roomAmount = 5;
+    this.roomAmount = 200;
     this.tileSize = 16;
   }
 
@@ -62,14 +62,82 @@ class RoomGen {
     ];
   }
 
-  checkRoomOverlap() {
-    // todo
+  checkRoomOverlap(room1, rooms) {
+    for (let room2 of rooms) {
+      if (
+        room1.startTileX < room2.startTileX + room2.width &&
+        room1.startTileX + room1.width > room2.startTileX &&
+        room1.startTileY < room2.startTileY + room2.height &&
+        room1.startTileY + room1.height > room2.startTileY
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  generateRandomRoom(randPos, prevRoom, roomWidth, roomHeight) {
+    let randomRoom = null;
+    if (randPos == 0) {
+      // place a room to the right of previous
+      randomRoom = {
+        startTileX: prevRoom.startTileX + prevRoom.width,
+        startTileY: Math.round(
+          prevRoom.startTileY +
+            (Math.random() * (prevRoom.height - roomHeight)) %
+              (prevRoom.height - 2)
+        ),
+        width: roomWidth,
+        height: roomHeight,
+        icon: botbIcon.random16icon()
+      };
+    } else if (randPos == 1) {
+      // place a room below previous
+      randomRoom = {
+        startTileX: Math.round(
+          prevRoom.startTileX +
+            (Math.random() * (prevRoom.width - roomWidth)) %
+              (prevRoom.width - 2)
+        ),
+        startTileY: prevRoom.startTileY + prevRoom.height,
+        width: roomWidth,
+        height: roomHeight,
+        icon: botbIcon.random16icon()
+      };
+    } else if (randPos == 2) {
+      // place a room to the left of previous
+      randomRoom = {
+        startTileX: prevRoom.startTileX - roomWidth,
+        startTileY: Math.round(
+          prevRoom.startTileY +
+            (Math.random() * (prevRoom.height - roomHeight)) %
+              (prevRoom.height - 2)
+        ),
+        width: roomWidth,
+        height: roomHeight,
+        icon: botbIcon.random16icon()
+      };
+    } else {
+      // place a room above previous
+      randomRoom = {
+        startTileX: Math.round(
+          prevRoom.startTileX +
+            (Math.random() * (prevRoom.width - roomWidth)) %
+              (prevRoom.width - 2)
+        ),
+        startTileY: prevRoom.startTileY - roomHeight,
+        width: roomWidth,
+        height: roomHeight,
+        icon: botbIcon.random16icon()
+      };
+    }
+    return randomRoom;
   }
 
   generate() {
     let rooms = [
       {
-        startTileX: 80,
+        startTileX: 145,
         startTileY: 60,
         width: 25,
         height: 25,
@@ -78,65 +146,47 @@ class RoomGen {
     ];
 
     for (let roomIndex = 0; roomIndex < this.roomAmount; roomIndex++) {
-      // aoe
-
       //let prevRoom = rooms[rooms.length - 1];
       let prevRoom = rooms[this.randint(0, rooms.length - 1)];
 
       let randPos = Math.round(Math.random() * 3);
       //let randPos = 1;
-      let randomRoom = null;
 
-      let roomWidth = Math.round(Math.random() * 16) + 2;
-      let roomHeight = Math.round(Math.random() * 16) + 2;
+      let roomWidth = Math.round(Math.random() * 16) + 4;
+      let roomHeight = Math.round(Math.random() * 16) + 4;
 
-      if (randPos == 0) {
-        // place a room to the right of previous
-        randomRoom = {
-          startTileX: prevRoom.startTileX + prevRoom.width,
-          startTileY: this.roundToTileSize(
-            prevRoom.startTileY + (Math.random() * prevRoom.height - 5)
-          ),
-          width: roomWidth,
-          height: roomHeight,
-          icon: botbIcon.random16icon()
-        };
-      } else if (randPos == 1) {
-        // place a room below previous
-        randomRoom = {
-          startTileX: this.roundToTileSize(
-            prevRoom.startTileX + (Math.random() * prevRoom.width - 5)
-          ),
-          startTileY: prevRoom.startTileY + prevRoom.height,
-          width: roomWidth,
-          height: roomHeight,
-          icon: botbIcon.random16icon()
-        };
-      } else if (randPos == 2) {
-        // place a room to the left of previous
-        randomRoom = {
-          startTileX: prevRoom.startTileX - roomWidth,
-          startTileY: this.roundToTileSize(
-            prevRoom.startTileY + Math.random() * prevRoom.height - 5
-          ),
-          width: roomWidth,
-          height: roomHeight,
-          icon: botbIcon.random16icon()
-        };
-      } else {
-        // place a room above previous
-        randomRoom = {
-          startTileX: this.roundToTileSize(
-            prevRoom.startTileX + this.randint(0, prevRoom.width / 2)
-          ),
-          startTileY: prevRoom.startTileY - roomHeight,
-          width: roomWidth,
-          height: roomHeight,
-          icon: botbIcon.random16icon()
-        };
+      let randomRoom = this.generateRandomRoom(
+        randPos,
+        prevRoom,
+        roomWidth,
+        roomHeight
+      );
+
+      let overlap = false;
+
+      if (this.checkRoomOverlap(randomRoom, rooms)) {
+        overlap = true;
+        for (let position = 0; position < 4; position++) {
+          //roomWidth = Math.round(Math.random() * 16) + 2;
+          //roomHeight = Math.round(Math.random() * 16) + 2;
+
+          randomRoom = this.generateRandomRoom(
+            position,
+            prevRoom,
+            roomWidth,
+            roomHeight
+          );
+
+          if (!this.checkRoomOverlap(prevRoom, rooms)) {
+            overlap = false;
+            break;
+          }
+        }
       }
 
-      rooms.push(randomRoom);
+      if (!overlap) {
+        rooms.push(randomRoom);
+      }
     }
 
     return rooms;

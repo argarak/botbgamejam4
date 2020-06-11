@@ -30,7 +30,7 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 2
+        intensity: 0.5
       },
       {
         tileX: Math.floor(Math.random() * 20),
