@@ -17,8 +17,9 @@ class Graphics {
     this.camX = 0;
 
     this.lighting = true;
+    this.lightMapOffset = 2;
 
-    this.rooms = roomgen.test();
+    this.rooms = roomgen.generate();
 
     this.lightsources = [
       {
@@ -119,15 +120,20 @@ class Graphics {
 
   drawLightMap() {
     let alpha = 1;
-    for (let col = 0; col < this.canvas.height / this.tileSize; col++) {
-      for (let row = 0; row < this.canvas.width / this.tileSize; row++) {
+    for (
+      let col = -this.lightMapOffset;
+      col < this.canvas.height / this.tileSize + this.lightMapOffset;
+      col++
+    ) {
+      for (let row = -2; row < this.canvas.width / this.tileSize + 2; row++) {
         alpha = 1;
 
-        let xtile =
-          row + Math.round((this.camX - this.canvas.width / 2) / this.tileSize);
-        let ytile =
-          col +
-          Math.round((this.camY - this.canvas.height / 2) / this.tileSize);
+        let xtile = Math.round(
+          row + (this.camX - this.canvas.width / 2) / this.tileSize
+        );
+        let ytile = Math.round(
+          col + (this.camY - this.canvas.height / 2) / this.tileSize
+        );
 
         for (let source of this.lightsources) {
           if (this.lighting) {
@@ -148,10 +154,15 @@ class Graphics {
           }
         }
 
+        let xoffset =
+          this.camX - Math.round(this.camX / this.tileSize) * this.tileSize;
+        let yoffset =
+          this.camY - Math.round(this.camY / this.tileSize) * this.tileSize;
+
         this.ctx.fillStyle = "rgba(0,0,0, " + alpha.toFixed(1) + ")";
         this.ctx.fillRect(
-          row * this.tileSize,
-          col * this.tileSize,
+          Math.round(row * this.tileSize - xoffset),
+          Math.round(col * this.tileSize - yoffset),
           this.tileSize,
           this.tileSize
         );
