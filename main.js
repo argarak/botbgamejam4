@@ -1,9 +1,13 @@
 class Graphics {
   constructor() {
-    this.mapcanvas = document.getElementById("mapCanvas");
+    // main game canvas
     this.canvas = document.getElementById("gameCanvas");
     this.ctx = this.canvas.getContext("2d");
+
+    // map canvas where the map is drawn
+    this.mapcanvas = document.getElementById("mapCanvas");
     this.mapctx = this.mapcanvas.getContext("2d");
+
     this.ctx.imageSmoothingEnabled = false;
 
     this.spritesheet = document.getElementById("spritesheet");
@@ -14,7 +18,7 @@ class Graphics {
 
     this.lighting = true;
 
-    this.rooms = roomgen.generate();
+    this.rooms = roomgen.test();
 
     this.lightsources = [
       {
@@ -113,52 +117,66 @@ class Graphics {
     }
   }
 
+  drawLightMap() {
+    let alpha = 1;
+    for (let col = 0; col < this.canvas.height / this.tileSize; col++) {
+      for (let row = 0; row < this.canvas.width / this.tileSize; row++) {
+        alpha = 1;
+
+        let xtile =
+          row + Math.round((this.camX - this.canvas.width / 2) / this.tileSize);
+        let ytile =
+          col +
+          Math.round((this.camY - this.canvas.height / 2) / this.tileSize);
+
+        for (let source of this.lightsources) {
+          if (this.lighting) {
+            alpha -=
+              source.intensity /
+              Math.sqrt(
+                Math.abs(
+                  (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
+                ) * 5
+              );
+
+            // if the tile IS the source, make it full brightness
+            if (source.tileX == xtile && source.tileY == ytile) {
+              alpha = 0;
+            }
+          } else {
+            alpha = 0;
+          }
+        }
+
+        this.ctx.fillStyle = "rgba(0,0,0, " + alpha.toFixed(1) + ")";
+        this.ctx.fillRect(
+          row * this.tileSize,
+          col * this.tileSize,
+          this.tileSize,
+          this.tileSize
+        );
+      }
+    }
+  }
+
   drawMap() {
     for (let room of this.rooms) {
       for (let rowindex = 0; rowindex < room.height; rowindex++) {
         for (let tileindex = 0; tileindex < room.width; tileindex++) {
-          let alpha = 1;
-          for (let source of this.lightsources) {
-            let xpos =
-              (1 + room.startTileX) * this.tileSize + tileindex * this.tileSize;
-            let ypos =
-              (1 + room.startTileY) * this.tileSize + rowindex * this.tileSize;
+          let xpos =
+            (1 + room.startTileX) * this.tileSize + tileindex * this.tileSize;
+          let ypos =
+            (1 + room.startTileY) * this.tileSize + rowindex * this.tileSize;
 
-            let xtile = xpos / this.tileSize;
-            let ytile = ypos / this.tileSize;
+          let xtile = xpos / this.tileSize;
+          let ytile = ypos / this.tileSize;
 
-            if (this.lighting) {
-              alpha -=
-                source.intensity /
-                Math.sqrt(
-                  Math.abs(
-                    (xtile - source.tileX) ** 2 + (ytile - source.tileY) ** 2
-                  ) * 5
-                );
-
-              // if the tile IS the source, make it full brightness
-              if (source.tileX == xtile && source.tileY == ytile) {
-                alpha = 0;
-              }
-            } else {
-              alpha = 0;
-            }
-
-            this.drawIcon(
-              room.icon,
-              xpos,
-              ypos,
-              1,
-              0,
-              -1,
-              -1,
-              "rgba(0,0,0," + alpha.toFixed(1) + ")",
-              this.mapctx
-            );
-          }
+          this.drawIcon(room.icon, xpos, ypos, 1, 0, -1, -1, "", this.mapctx);
         }
       }
     }
+
+    graphics.updateRoom();
   }
 }
 
@@ -299,7 +317,8 @@ class Player {
         }
       }
       if (preventMovement) {
-        this.xpos = Math.round(this.xpos / 16) * 16;
+        this.xpos =
+          Math.round(this.xpos / graphics.tileSize) * graphics.tileSize;
         //this.xpos = graphics.lightsources[0].tileX * graphics.tileSize;
       }
     }
@@ -339,7 +358,8 @@ class Player {
         }
       }
       if (preventMovement) {
-        this.ypos = Math.round(this.ypos / 16) * 16;
+        this.ypos =
+          Math.round(this.ypos / graphics.tileSize) * graphics.tileSize;
         //this.ypos = graphics.lightsources[0].tileY * graphics.tileSize;
       }
     }
@@ -347,7 +367,7 @@ class Player {
 
   draw() {
     if (this.speedX !== 0 || this.speedY !== 0) {
-      //graphics.drawMap();
+      graphics.updateRoom();
     }
     this.updatePositions();
     this.checkCollision();
@@ -407,13 +427,13 @@ document.addEventListener("DOMContentLoaded", () => {
   graphics.drawMap();
 
   function gameLoop() {
-    graphics.clearScreen();
+    //graphics.clearScreen();
 
     var camX = -player.xpos + graphics.canvas.width / 2;
     var camY = -player.ypos + graphics.canvas.height / 2;
 
     graphics.ctx.drawImage(graphics.mapcanvas, camX, camY);
-    graphics.updateRoom();
+    graphics.drawLightMap();
     player.draw();
 
     window.requestAnimationFrame(gameLoop);
