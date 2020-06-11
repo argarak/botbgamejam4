@@ -1,6 +1,6 @@
 class RoomGen {
   constructor() {
-    this.roomAmount = 30;
+    this.roomAmount = 200;
   }
 
   // a test level for testing heheh
@@ -29,14 +29,14 @@ class RoomGen {
       },
       {
         startTileX: 0,
-        startTileY: -10,
-        width: 50,
+        startTileY: 20,
+        width: 10,
         height: 10,
         icon: botbIcon.random16icon()
       },
       {
         startTileX: 50,
-        startTileY: -10,
+        startTileY: 0,
         width: 10,
         height: 30,
         icon: botbIcon.random16icon()
@@ -65,8 +65,8 @@ class RoomGen {
     for (let roomIndex = 0; roomIndex < this.roomAmount; roomIndex++) {
       // aoe
       let randomRoom = {
-        startTileX: Math.round(64 - Math.random() * 128),
-        startTileY: Math.round(64 - Math.random() * 128),
+        startTileX: Math.round(64 - Math.random() * 64),
+        startTileY: Math.round(64 - Math.random() * 64),
         width: Math.round(Math.random() * 32),
         height: Math.round(Math.random() * 32),
         icon: botbIcon.random16icon()

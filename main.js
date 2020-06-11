@@ -12,9 +12,9 @@ class Graphics {
     this.camY = 0;
     this.camX = 0;
 
-    this.lighting = false;
+    this.lighting = true;
 
-    this.rooms = roomgen.test();
+    this.rooms = roomgen.generate();
 
     this.lightsources = [
       {
@@ -96,7 +96,7 @@ class Graphics {
     //this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  drawMap() {
+  updateRoom() {
     for (let room of this.rooms) {
       if (
         this.camX - 8 < (room.startTileX + room.width) * this.tileSize &&
@@ -110,7 +110,11 @@ class Graphics {
           this.roomNameElement.innerHTML = this.currentRoomNameValue;
         }
       }
+    }
+  }
 
+  drawMap() {
+    for (let room of this.rooms) {
       for (let rowindex = 0; rowindex < room.height; rowindex++) {
         for (let tileindex = 0; tileindex < room.width; tileindex++) {
           let alpha = 1;
@@ -179,7 +183,7 @@ class Player {
     this.movingLeft = false;
     this.movingRight = false;
 
-    this.debug = true;
+    this.debug = false;
   }
 
   updatePositions() {
@@ -409,6 +413,7 @@ document.addEventListener("DOMContentLoaded", () => {
     var camY = -player.ypos + graphics.canvas.height / 2;
 
     graphics.ctx.drawImage(graphics.mapcanvas, camX, camY);
+    graphics.updateRoom();
     player.draw();
 
     window.requestAnimationFrame(gameLoop);
