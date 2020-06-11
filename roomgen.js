@@ -2,6 +2,9 @@ class RoomGen {
   constructor() {
     this.roomAmount = 200;
     this.tileSize = 16;
+
+    this.mapHeight = 2560;
+    this.mapWidth = 5120;
   }
 
   roundToTileSize(x) {
@@ -145,6 +148,8 @@ class RoomGen {
       }
     ];
 
+    let overlap = false;
+
     for (let roomIndex = 0; roomIndex < this.roomAmount; roomIndex++) {
       //let prevRoom = rooms[rooms.length - 1];
       let prevRoom = rooms[this.randint(0, rooms.length - 1)];
@@ -162,7 +167,7 @@ class RoomGen {
         roomHeight
       );
 
-      let overlap = false;
+      overlap = false;
 
       if (this.checkRoomOverlap(randomRoom, rooms)) {
         overlap = true;
@@ -182,6 +187,18 @@ class RoomGen {
             break;
           }
         }
+      }
+
+      // ignore any rooms which go out of the map bounds
+      if (
+        (randomRoom.startTileY + randomRoom.height + 1) * this.tileSize >
+          this.mapHeight ||
+        randomRoom.startTileY * this.tileSize < 0 ||
+        (randomRoom.startTileX + randomRoom.width + 1) * this.tileSize >
+          this.mapWidth ||
+        randomRoom.startTileX * this.tileSize < 0
+      ) {
+        overlap = true;
       }
 
       if (!overlap) {

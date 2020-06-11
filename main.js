@@ -8,6 +8,7 @@ class Graphics {
     this.mapcanvas = document.getElementById("mapCanvas");
     this.mapctx = this.mapcanvas.getContext("2d");
 
+    this.mapctx.imageSmoothingEnabled = false;
     this.ctx.imageSmoothingEnabled = false;
 
     this.spritesheet = document.getElementById("spritesheet");
@@ -176,10 +177,6 @@ class Graphics {
     }
   }
 
-  downloadMap() {
-    document.getElementById("mapimg").src = this.mapcanvas.toDataURL();
-  }
-
   drawMap() {
     for (let room of this.rooms) {
       for (let rowindex = 0; rowindex < room.height; rowindex++) {
@@ -205,8 +202,8 @@ var graphics = new Graphics();
 
 class Player {
   constructor() {
-    this.xpos = 82 * 16;
-    this.ypos = 62 * 16;
+    this.xpos = 148 * 16;
+    this.ypos = 63 * 16;
     this.icon = botbIcon.getIcon("n00b");
 
     // player movement
@@ -446,6 +443,14 @@ function clamp(value, min, max) {
 
 document.addEventListener("DOMContentLoaded", () => {
   graphics.drawMap();
+
+  document.getElementById("mapCanvas").addEventListener("click", e => {
+    e.target.style.display = "none";
+  });
+
+  document.getElementById("mapButton").addEventListener("click", e => {
+    document.getElementById("mapCanvas").style.display = "block";
+  });
 
   function gameLoop() {
     graphics.clearScreen();
