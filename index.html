@@ -800,7 +800,9 @@
          }
 
          #mapCanvas {
-             display: none;
+             /*display: none;*/
+             width: 20px;
+             height: 20px;
          }
         </style>
         <title>welcome to the game!</title>
@@ -809,7 +811,8 @@
     <body>
         <img id="spritesheet" alt="" src="botb-spritesheet.png"/>
         <!-- this canvas is for rendering the entire map -->
-        <canvas id="mapCanvas" width="2560" height="1920"></canvas>
+        <!-- <canvas id="mapCanvas" width="2560" height="1920"></canvas> -->
+        <canvas id="mapCanvas" width="5120" height="2560"></canvas>
         <canvas id="gameCanvas" width="640" height="480">
             lol go run this using a modern web browser like the latest firefox or chrome
         </canvas>

@@ -17,6 +17,11 @@ class Graphics {
     this.camX = 0;
 
     this.lighting = true;
+
+    // number of alpha decimal places
+    // e.g. value of 1 will limit lighting to .1, .2, .3 etc.
+    // can make lighting look more "retro"
+    this.lightingResolution = 1;
     this.lightMapOffset = 2;
 
     this.rooms = roomgen.generate();
@@ -25,7 +30,7 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 0.5
+        intensity: 2
       },
       {
         tileX: Math.floor(Math.random() * 20),
@@ -159,7 +164,8 @@ class Graphics {
         let yoffset =
           this.camY - Math.round(this.camY / this.tileSize) * this.tileSize;
 
-        this.ctx.fillStyle = "rgba(0,0,0, " + alpha.toFixed(1) + ")";
+        this.ctx.fillStyle =
+          "rgba(0,0,0, " + alpha.toFixed(this.lightingResolution) + ")";
         this.ctx.fillRect(
           Math.round(row * this.tileSize - xoffset),
           Math.round(col * this.tileSize - yoffset),
@@ -168,6 +174,10 @@ class Graphics {
         );
       }
     }
+  }
+
+  downloadMap() {
+    document.getElementById("mapimg").src = this.mapcanvas.toDataURL();
   }
 
   drawMap() {
@@ -195,8 +205,8 @@ var graphics = new Graphics();
 
 class Player {
   constructor() {
-    this.xpos = 16 * 4;
-    this.ypos = 16 * 4;
+    this.xpos = 82 * 16;
+    this.ypos = 62 * 16;
     this.icon = botbIcon.getIcon("n00b");
 
     // player movement
@@ -438,7 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
   graphics.drawMap();
 
   function gameLoop() {
-    //graphics.clearScreen();
+    graphics.clearScreen();
 
     var camX = -player.xpos + graphics.canvas.width / 2;
     var camY = -player.ypos + graphics.canvas.height / 2;
