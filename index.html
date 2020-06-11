@@ -798,12 +798,18 @@
          #roomName {
              color: #fff;
          }
+
+         #mapCanvas {
+             display: none;
+         }
         </style>
         <title>welcome to the game!</title>
     </head>
 
     <body>
         <img id="spritesheet" alt="" src="botb-spritesheet.png"/>
+        <!-- this canvas is for rendering the entire map -->
+        <canvas id="mapCanvas" width="2560" height="1920"></canvas>
         <canvas id="gameCanvas" width="640" height="480">
             lol go run this using a modern web browser like the latest firefox or chrome
         </canvas>

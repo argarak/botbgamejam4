@@ -1,7 +1,56 @@
 class RoomGen {
   constructor() {
-    this.roomAmount = 15;
+    this.roomAmount = 30;
   }
+
+  // a test level for testing heheh
+  test() {
+    return [
+      {
+        startTileX: 0,
+        startTileY: 0,
+        width: 20,
+        height: 20,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 20,
+        startTileY: 10,
+        width: 10,
+        height: 40,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 30,
+        startTileY: 10,
+        width: 50,
+        height: 5,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 0,
+        startTileY: -10,
+        width: 50,
+        height: 10,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 50,
+        startTileY: -10,
+        width: 10,
+        height: 30,
+        icon: botbIcon.random16icon()
+      },
+      {
+        startTileX: 20,
+        startTileY: 0,
+        width: 10,
+        height: 10,
+        icon: botbIcon.random16icon()
+      }
+    ];
+  }
+
   generate() {
     let rooms = [
       {

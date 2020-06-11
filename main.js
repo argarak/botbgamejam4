@@ -1,7 +1,9 @@
 class Graphics {
   constructor() {
+    this.mapcanvas = document.getElementById("mapCanvas");
     this.canvas = document.getElementById("gameCanvas");
     this.ctx = this.canvas.getContext("2d");
+    this.mapctx = this.mapcanvas.getContext("2d");
     this.ctx.imageSmoothingEnabled = false;
 
     this.spritesheet = document.getElementById("spritesheet");
@@ -10,54 +12,9 @@ class Graphics {
     this.camY = 0;
     this.camX = 0;
 
-    this.lighting = true;
+    this.lighting = false;
 
-    // this.rooms = [
-    //   {
-    //     startTileX: 0,
-    //     startTileY: 0,
-    //     width: 20,
-    //     height: 20,
-    //     icon: botbIcon.random16icon()
-    //   },
-    //   {
-    //     startTileX: 20,
-    //     startTileY: 10,
-    //     width: 10,
-    //     height: 40,
-    //     icon: botbIcon.random16icon()
-    //   },
-    //   {
-    //     startTileX: 30,
-    //     startTileY: 10,
-    //     width: 50,
-    //     height: 5,
-    //     icon: botbIcon.random16icon()
-    //   },
-    //   {
-    //     startTileX: 0,
-    //     startTileY: -10,
-    //     width: 50,
-    //     height: 10,
-    //     icon: botbIcon.random16icon()
-    //   },
-    //   {
-    //     startTileX: 50,
-    //     startTileY: -10,
-    //     width: 10,
-    //     height: 30,
-    //     icon: botbIcon.random16icon()
-    //   },
-    //   {
-    //     startTileX: 20,
-    //     startTileY: 0,
-    //     width: 10,
-    //     height: 10,
-    //     icon: botbIcon.random16icon()
-    //   }
-    // ];
-
-    this.rooms = roomgen.generate();
+    this.rooms = roomgen.test();
 
     this.lightsources = [
       {
@@ -87,7 +44,17 @@ class Graphics {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  drawIcon(icon, x, y, scale = 1, rotate = 0, cx = -1, cy = -1, tint = "") {
+  drawIcon(
+    icon,
+    x,
+    y,
+    scale = 1,
+    rotate = 0,
+    cx = -1,
+    cy = -1,
+    tint = "",
+    ctx = this.ctx
+  ) {
     let xpos = cx;
     let ypos = cy;
 
@@ -99,24 +66,24 @@ class Graphics {
       cy = icon.height * scale / 2;
     }
 
-    this.ctx.setTransform(
-      scale,
-      0,
-      0,
-      scale,
-      this.canvas.width / 2 + (x - this.camX),
-      this.canvas.height / 2 + (y - this.camY)
-    );
-    this.ctx.rotate(rotate * Math.PI / 180);
+    // this.ctx.setTransform(
+    //   scale,
+    //   0,
+    //   0,
+    //   scale,
+    //   this.canvas.width / 2 + (x - this.camX),
+    //   this.canvas.height / 2 + (y - this.camY)
+    // );
+    // this.ctx.rotate(rotate * Math.PI / 180);
 
-    this.ctx.drawImage(
+    ctx.drawImage(
       this.spritesheet,
       icon.posX,
       icon.posY,
       icon.width,
       icon.height,
-      -xpos,
-      -ypos,
+      x,
+      y,
       icon.width * scale,
       icon.height * scale
     );
@@ -126,7 +93,7 @@ class Graphics {
       this.ctx.fillRect(-xpos, -ypos, icon.width * scale, icon.height * scale);
     }
 
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    //this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   drawMap() {
@@ -181,7 +148,8 @@ class Graphics {
               0,
               -1,
               -1,
-              "rgba(0,0,0," + alpha.toFixed(1) + ")"
+              "rgba(0,0,0," + alpha.toFixed(1) + ")",
+              this.mapctx
             );
           }
         }
@@ -211,7 +179,7 @@ class Player {
     this.movingLeft = false;
     this.movingRight = false;
 
-    this.debug = false;
+    this.debug = true;
   }
 
   updatePositions() {
@@ -375,12 +343,15 @@ class Player {
 
   draw() {
     if (this.speedX !== 0 || this.speedY !== 0) {
-      graphics.clearScreen();
-      graphics.drawMap();
+      //graphics.drawMap();
     }
     this.updatePositions();
     this.checkCollision();
-    graphics.drawIcon(this.icon, this.xpos, this.ypos);
+    graphics.drawIcon(
+      this.icon,
+      graphics.canvas.width / 2,
+      graphics.canvas.height / 2
+    );
   }
 }
 
@@ -422,12 +393,24 @@ document.addEventListener("keyup", function(event) {
   }
 });
 
+function clamp(value, min, max) {
+  if (value < min) return min;
+  else if (value > max) return max;
+  return value;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   graphics.drawMap();
 
   function gameLoop() {
-    //graphics.drawMap();
+    graphics.clearScreen();
+
+    var camX = -player.xpos + graphics.canvas.width / 2;
+    var camY = -player.ypos + graphics.canvas.height / 2;
+
+    graphics.ctx.drawImage(graphics.mapcanvas, camX, camY);
     player.draw();
+
     window.requestAnimationFrame(gameLoop);
   }
 
