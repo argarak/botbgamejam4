@@ -464,31 +464,134 @@ class Enemy {
     this.enemies = [
       {
         type: this.bug,
-        xpos: 149 * 16,
-        ypos: 64 * 16,
-        ai: this.bugAI,
-        health: 100
+        tileX: 149,
+        tileY: 61,
+        health: 100,
+        speed: 1,
+        visitedTiles: []
       },
-
       {
         type: this.bug,
-        xpos: 150 * 16,
-        ypos: 65 * 16,
-        ai: this.bugAI,
-        health: 100
+        tileX: 150,
+        tileY: 61,
+        health: 100,
+        speed: 1,
+        visitedTiles: []
       }
     ];
   }
 
-  bugAI() {
-    function distanceToPlayer(enemyX, enemyY) {
-      return Math.sqrt(
-        Math.pow(enemyX - player.xpos, 2) + Math.pow(enemyY - player.ypos, 2)
-      );
+  distanceToPlayer(tileX, tileY) {
+    return Math.sqrt(
+      Math.pow(tileX * graphics.tileSize - player.xpos, 2) +
+        Math.pow(tileY * graphics.tileSize - player.ypos, 2)
+    );
+  }
+
+  // returns true if any enemy is on given tile
+  enemyTile(tileX, tileY) {
+    for (let enemy of this.enemies) {
+      if (enemy.tileX === tileX && enemy.tileY === tileY) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // returns true if the tile given is in a valid location
+  // of any room
+  roomTile(tileX, tileY) {
+    for (let room of graphics.rooms) {
+      if (
+        player.checkRoomBounds(
+          room,
+          tileX * graphics.tileSize,
+          tileY * graphics.tileSize
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // returns true if the tile given has already been visited
+  // by the enemy
+  visitedTile(enemy, tileX, tileY) {
+    for (let visitedTile of enemy.visitedTiles) {
+      //console.log(visitedTile);
+      if (visitedTile[0] === tileX && visitedTile[1] === tileY) {
+        console.log("true");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // the most basic enemy ai
+
+  // path finding:::
+  // get array of valid tiles around the enemy
+
+  // ---  calculate the distance between each tile
+  // -E-  and the player, then choose the tile
+  // ---  with the smallest distance
+
+  // the tile must not have already been visited
+  bugAI(enemy) {
+    let tileX = enemy.tileX;
+    let tileY = enemy.tileY;
+
+    let allTiles = [
+      [tileX + 1, tileY],
+      [tileX - 1, tileY],
+      [tileX, tileY + 1],
+      [tileX, tileY - 1],
+      [tileX + 1, tileY + 1],
+      [tileX - 1, tileY - 1],
+      [tileX + 1, tileY - 1],
+      [tileX - 1, tileY + 1]
+    ];
+
+    let validTiles = [];
+
+    for (let tile of allTiles) {
+      if (
+        this.roomTile(tile[0], tile[1]) &&
+        !this.enemyTile(tile[0], tile[1]) &&
+        !this.visitedTile(enemy, tile[0], tile[1])
+      ) {
+        validTiles.push(tile);
+      }
     }
 
-    //
-    console.log(distanceToPlayer(this.xpos, this.ypos));
+    let minTileIndex = 0;
+
+    for (let tileIndex = 0; tileIndex < validTiles.length; tileIndex++) {
+      let minDistance = this.distanceToPlayer(
+        validTiles[minTileIndex][0],
+        validTiles[minTileIndex][1]
+      );
+      let currDistance = this.distanceToPlayer(
+        validTiles[tileIndex][0],
+        validTiles[tileIndex][1]
+      );
+
+      if (currDistance < minDistance) {
+        minTileIndex = tileIndex;
+      }
+    }
+
+    enemy.visitedTiles.push(validTiles[minTileIndex]);
+
+    enemy.tileX = validTiles[minTileIndex][0];
+    enemy.tileY = validTiles[minTileIndex][1];
+  }
+
+  handleEnemyAI(enemy) {
+    if (enemy.type == this.bug) {
+      this.bugAI(enemy);
+    }
   }
 
   getIcon(type) {
@@ -500,8 +603,18 @@ class Enemy {
 
   draw() {
     for (let enemy of this.enemies) {
-      let xdraw = graphics.canvas.width / 2 + (enemy.xpos - player.xpos);
-      let ydraw = graphics.canvas.height / 2 + (enemy.ypos - player.ypos);
+      if (enemy.health < 1) {
+        continue;
+      }
+
+      //this.handleEnemyAI(enemy);
+
+      let xdraw =
+        graphics.canvas.width / 2 +
+        (enemy.tileX * graphics.tileSize - player.xpos);
+      let ydraw =
+        graphics.canvas.height / 2 +
+        (enemy.tileY * graphics.tileSize - player.ypos);
 
       graphics.drawIcon(this.getIcon(enemy.type), xdraw, ydraw);
     }
