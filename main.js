@@ -115,9 +115,27 @@ class Graphics {
         this.camY - 8 < (room.startTileY + room.height) * this.tileSize &&
         this.camY - 8 > room.startTileY * this.tileSize
       ) {
-        if (this.currentRoomNameValue !== "room of " + room.icon.name) {
+        let name = room.icon.name;
+        if (name.includes("trophy")) {
+          let splitName = name.split("_");
+          if (splitName.length > 2) {
+            let trophyType = splitName[splitName.length - 1];
+            let trophy = "";
+            if (trophyType === "g") {
+              trophy = "gold";
+            }
+            if (trophyType === "s") {
+              trophy = "silver";
+            }
+            if (trophyType === "b") {
+              trophy = "bronze";
+            }
+            name = trophy + " " + splitName[1];
+          }
+        }
+        if (this.currentRoomNameValue !== "room of " + name) {
           this.currentRoom = room;
-          this.currentRoomNameValue = "room of " + room.icon.name;
+          this.currentRoomNameValue = "room of " + name;
           this.roomNameElement.innerHTML = this.currentRoomNameValue;
         }
       }
