@@ -31,7 +31,7 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 0.9
+        intensity: 2
       },
       {
         tileX: Math.floor(Math.random() * 20),
@@ -133,7 +133,8 @@ class Graphics {
             name = trophy + " " + splitName[1];
           }
         }
-        if (this.currentRoomNameValue !== "room of " + name) {
+        if (this.currentRoom !== room) {
+          console.log("entering new room!");
           this.currentRoom = room;
           this.currentRoomNameValue = "room of " + name;
           this.roomNameElement.innerHTML = this.currentRoomNameValue;
@@ -509,7 +510,7 @@ function clamp(value, min, max) {
   return value;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function gameLoad() {
   graphics.drawMap();
 
   document.getElementById("mapCanvas").addEventListener("click", e => {
@@ -534,4 +535,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   gameLoop();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  graphics.spritesheet.addEventListener("load", gameLoad, false);
+  if (graphics.spritesheet.complete) {
+    gameLoad();
+  }
 });

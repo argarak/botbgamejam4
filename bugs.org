@@ -1,4 +1,3 @@
-
 ** current list of minor bugs:
 
 - players collide with corners between 2+ rooms, probably wontfix

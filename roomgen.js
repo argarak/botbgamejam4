@@ -44,20 +44,21 @@ class RoomGen {
 
   // a test level for testing heheh
   test() {
+    let testicon = botbIcon.random16icon();
     return [
       {
         startTileX: 0,
         startTileY: 0,
         width: 20,
         height: 20,
-        icon: botbIcon.random16icon()
+        icon: testicon
       },
       {
         startTileX: 20,
         startTileY: 10,
         width: 10,
         height: 40,
-        icon: botbIcon.random16icon()
+        icon: testicon
       },
       {
         startTileX: 30,
