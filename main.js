@@ -31,7 +31,7 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 0.5
+        intensity: 0.9
       },
       {
         tileX: Math.floor(Math.random() * 20),
@@ -204,7 +204,7 @@ class Player {
   constructor() {
     this.xpos = 148 * 16;
     this.ypos = 63 * 16;
-    this.icon = botbIcon.getIcon("n00b");
+    this.icon = botbIcon.getIcon("hostist");
 
     // player movement
     this.speedX = 0;
@@ -213,6 +213,13 @@ class Player {
     this.friction = 1;
     this.maxSpeedLimit = 30;
     this.minSpeedLimit = -this.maxSpeedLimit;
+
+    this.mouseAngle = 0;
+    this.weaponFire = false;
+    this.weaponDistance = 5;
+    this.meleeDistance = this.weaponDistance;
+    this.maxMeleeDistance = 40;
+    this.meleeSwingSpeed = 1.1;
 
     this.movingUp = false;
     this.movingDown = false;
@@ -383,6 +390,35 @@ class Player {
     }
   }
 
+  weaponDraw() {
+    graphics.ctx.setTransform(
+      1,
+      0,
+      0,
+      1,
+      graphics.canvas.width / 2 + graphics.tileSize / 2,
+      graphics.canvas.height / 2 + graphics.tileSize / 2
+    );
+    graphics.ctx.rotate((135 + this.mouseAngle) * Math.PI / 180);
+
+    if (this.meleeDistance > this.weaponDistance && !this.weaponFire) {
+      this.meleeDistance /= this.meleeSwingSpeed;
+    }
+    if (this.weaponFire) {
+      this.meleeDistance *= this.meleeSwingSpeed;
+    }
+    if (this.meleeDistance > this.maxMeleeDistance) {
+      //this.meleeDistance = this.weaponDistance;
+      this.weaponFire = false;
+    }
+    graphics.drawIcon(
+      botbIcon.getIcon("battle"),
+      this.meleeDistance,
+      this.meleeDistance
+    );
+    graphics.ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
   draw() {
     if (this.speedX !== 0 || this.speedY !== 0) {
       graphics.updateRoom();
@@ -394,45 +430,59 @@ class Player {
       graphics.canvas.width / 2,
       graphics.canvas.height / 2
     );
+
+    this.weaponDraw();
   }
 }
 
 var player = new Player();
 
-document.addEventListener("keydown", function(event) {
-  if (event.code === "KeyW") {
+document.addEventListener("keydown", e => {
+  if (e.code === "KeyW") {
     player.movingUp = true;
   }
 
-  if (event.code === "KeyA") {
+  if (e.code === "KeyA") {
     player.movingLeft = true;
   }
 
-  if (event.code === "KeyS") {
+  if (e.code === "KeyS") {
     player.movingDown = true;
   }
 
-  if (event.code === "KeyD") {
+  if (e.code === "KeyD") {
     player.movingRight = true;
   }
 });
 
-document.addEventListener("keyup", function(event) {
-  if (event.code === "KeyW") {
+document.addEventListener("keyup", e => {
+  if (e.code === "KeyW") {
     player.movingUp = false;
   }
 
-  if (event.code === "KeyA") {
+  if (e.code === "KeyA") {
     player.movingLeft = false;
   }
 
-  if (event.code === "KeyS") {
+  if (e.code === "KeyS") {
     player.movingDown = false;
   }
 
-  if (event.code === "KeyD") {
+  if (e.code === "KeyD") {
     player.movingRight = false;
   }
+});
+
+document.addEventListener("click", e => {
+  player.weaponFire = true;
+});
+
+document.addEventListener("mousemove", e => {
+  let relativex = document.body.clientWidth / 2 - e.clientX;
+  let relativey = document.body.clientHeight / 2 - e.clientY;
+  player.mouseAngle = Math.round(
+    Math.atan2(relativey, relativex) * 180 / Math.PI
+  );
 });
 
 function clamp(value, min, max) {

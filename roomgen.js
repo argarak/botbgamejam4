@@ -17,6 +17,31 @@ class RoomGen {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  levelName() {
+    let randIcon1 = botbIcon.random16icon().name;
+    let randIcon2 = botbIcon.random16icon().name;
+
+    if (randIcon1.includes("_")) {
+      randIcon1 = randIcon1.split("_")[
+        this.randint(0, randIcon1.split("_").length - 1)
+      ];
+    }
+
+    if (randIcon2.includes("_")) {
+      randIcon2 = randIcon2.split("_")[
+        this.randint(0, randIcon2.split("_").length - 1)
+      ];
+    }
+
+    return (
+      randIcon1.substring(0, this.randint(1, randIcon1.length - 1)) +
+      randIcon2.substring(
+        this.randint(1, randIcon2.length - 2),
+        randIcon2.length - 1
+      )
+    );
+  }
+
   // a test level for testing heheh
   test() {
     return [
