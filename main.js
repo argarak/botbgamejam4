@@ -22,7 +22,7 @@ class Graphics {
     // number of alpha decimal places
     // e.g. value of 1 will limit lighting to .1, .2, .3 etc.
     // can make lighting look more "retro"
-    this.lightingResolution = 1;
+    this.lightingResolution = 2;
     this.lightMapOffset = 2;
 
     this.rooms = roomgen.generate();
@@ -31,7 +31,7 @@ class Graphics {
       {
         tileX: Math.floor(Math.random() * 20),
         tileY: Math.floor(Math.random() * 20),
-        intensity: 2
+        intensity: 0.5
       },
       {
         tileX: Math.floor(Math.random() * 20),
@@ -424,6 +424,8 @@ class Player {
     }
     if (this.weaponFire) {
       this.meleeDistance *= this.meleeSwingSpeed;
+
+      // check collision with enemies
     }
     if (this.meleeDistance > this.maxMeleeDistance) {
       //this.meleeDistance = this.weaponDistance;
@@ -457,7 +459,10 @@ var player = new Player();
 
 class Enemy {
   constructor() {
-    this.bug = 0;
+    this.bug = {
+      icon: botbIcon.getIcon("bug"),
+      activationDistance: 250
+    };
     this.tick = 0;
     this.maxTick = 1000;
     this.enemies = [
@@ -474,7 +479,7 @@ class Enemy {
         tileX: 150,
         tileY: 61,
         health: 100,
-        activateTickMultiple: this.randint(45, 65),
+        activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       },
       {
@@ -482,7 +487,7 @@ class Enemy {
         tileX: 151,
         tileY: 61,
         health: 100,
-        activateTickMultiple: this.randint(45, 65),
+        activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       },
       {
@@ -490,7 +495,7 @@ class Enemy {
         tileX: 152,
         tileY: 61,
         health: 100,
-        activateTickMultiple: this.randint(45, 65),
+        activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       },
       {
@@ -498,7 +503,7 @@ class Enemy {
         tileX: 153,
         tileY: 61,
         health: 100,
-        activateTickMultiple: this.randint(45, 65),
+        activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       }
     ];
@@ -571,11 +576,9 @@ class Enemy {
     let tileX = enemy.tileX;
     let tileY = enemy.tileY;
 
-    if (
-      tileX ===
-        Math.round(player.xpos / graphics.tileSize) * graphics.tileSize &&
-      tileY === Math.round(player.ypos / graphics.tileSize) * graphics.tileSize
-    ) {
+    let distance = this.distanceToPlayer(tileX, tileY);
+
+    if (distance < 10) {
       // player get hurt
       return;
     }
@@ -635,6 +638,13 @@ class Enemy {
     if (this.tick % enemy.activateTickMultiple !== 0) {
       return;
     }
+
+    let distance = this.distanceToPlayer(enemy.tileX, enemy.tileY);
+
+    if (distance > enemy.type.activationDistance) {
+      return;
+    }
+
     if (enemy.type == this.bug) {
       this.bugAI(enemy);
     }
@@ -736,8 +746,8 @@ function gameLoad() {
     var camY = -player.ypos + graphics.canvas.height / 2;
 
     graphics.ctx.drawImage(graphics.mapcanvas, camX, camY);
-    enemy.draw();
     graphics.drawLightMap();
+    enemy.draw();
     player.draw();
 
     window.requestAnimationFrame(gameLoop);
