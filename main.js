@@ -236,7 +236,7 @@ class Player {
     this.weaponFire = false;
     this.weaponDistance = 5;
     this.meleeDistance = this.weaponDistance;
-    this.maxMeleeDistance = 100;
+    this.maxMeleeDistance = 40;
     this.meleeSwingSpeed = 1.1;
     this.weaponTileX = 0;
     this.weaponTileY = 0;
@@ -503,6 +503,7 @@ class Enemy {
         tileX: 149,
         tileY: 61,
         health: 100,
+        maxHealth: 100,
         activateTickMultiple: this.randint(45, 65),
         visitedTiles: []
       },
@@ -511,6 +512,7 @@ class Enemy {
         tileX: 150,
         tileY: 61,
         health: 100,
+        maxHealth: 100,
         activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       },
@@ -519,6 +521,7 @@ class Enemy {
         tileX: 151,
         tileY: 61,
         health: 100,
+        maxHealth: 100,
         activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       },
@@ -527,6 +530,7 @@ class Enemy {
         tileX: 152,
         tileY: 61,
         health: 100,
+        maxHealth: 100,
         activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       },
@@ -535,6 +539,7 @@ class Enemy {
         tileX: 153,
         tileY: 61,
         health: 100,
+        maxHealth: 100,
         activateTickMultiple: this.randint(25, 65),
         visitedTiles: []
       }
@@ -561,7 +566,7 @@ class Enemy {
   // returns the enemy index if any enemy is hit on a given tile
   hitEnemyTile(tileX, tileY) {
     for (let index in this.enemies) {
-      if (this.enemies[0].health > 0) {
+      if (this.enemies[index].health > 0) {
         if (
           this.enemies[index].tileX === tileX &&
           this.enemies[index].tileY === tileY
@@ -704,6 +709,29 @@ class Enemy {
     return null;
   }
 
+  drawHealthBar(enemy, xdraw, ydraw) {
+    let fractionHealth = enemy.health / enemy.maxHealth;
+
+    if (fractionHealth === 1) {
+      return;
+    }
+
+    graphics.ctx.fillStyle = "#f00";
+    graphics.ctx.fillRect(
+      xdraw,
+      ydraw + graphics.tileSize,
+      graphics.tileSize,
+      2
+    );
+    graphics.ctx.fillStyle = "#0f0";
+    graphics.ctx.fillRect(
+      xdraw,
+      ydraw + graphics.tileSize,
+      graphics.tileSize * fractionHealth,
+      2
+    );
+  }
+
   draw() {
     this.tick = (this.tick + 1) % this.maxTick;
     for (let enemy of this.enemies) {
@@ -721,6 +749,7 @@ class Enemy {
         (enemy.tileY * graphics.tileSize - player.ypos);
 
       graphics.drawIcon(this.getIcon(enemy.type), xdraw, ydraw);
+      this.drawHealthBar(enemy, xdraw, ydraw);
     }
   }
 }
