@@ -236,8 +236,12 @@ class Player {
     this.weaponFire = false;
     this.weaponDistance = 5;
     this.meleeDistance = this.weaponDistance;
-    this.maxMeleeDistance = 40;
+    this.maxMeleeDistance = 100;
     this.meleeSwingSpeed = 1.1;
+    this.weaponTileX = 0;
+    this.weaponTileY = 0;
+    this.weaponDamage = 50;
+    this.weaponPositionCompensationFactor = 1.5;
 
     this.movingUp = false;
     this.movingDown = false;
@@ -424,9 +428,37 @@ class Player {
     }
     if (this.weaponFire) {
       this.meleeDistance *= this.meleeSwingSpeed;
-
-      // check collision with enemies
     }
+
+    this.weaponTileX = Math.round(
+      (this.xpos +
+        this.meleeDistance *
+          this.weaponPositionCompensationFactor *
+          Math.sin((this.mouseAngle - 90) * Math.PI / 180)) /
+        graphics.tileSize
+    );
+
+    this.weaponTileY = Math.round(
+      (this.ypos +
+        this.meleeDistance *
+          this.weaponPositionCompensationFactor *
+          Math.cos((this.mouseAngle + 90) * Math.PI / 180)) /
+        graphics.tileSize
+    );
+
+    graphics.lightsources[1].tileX = this.weaponTileX;
+    graphics.lightsources[1].tileY = this.weaponTileY;
+
+    if (this.weaponFire) {
+      // check collision with enemies
+      let enemyIndex = enemy.hitEnemyTile(this.weaponTileX, this.weaponTileY);
+
+      if (enemyIndex) {
+        enemy.enemies[enemyIndex].health -= this.weaponDamage;
+        this.weaponFire = false;
+      }
+    }
+
     if (this.meleeDistance > this.maxMeleeDistance) {
       //this.meleeDistance = this.weaponDistance;
       this.weaponFire = false;
@@ -524,6 +556,19 @@ class Enemy {
       }
     }
     return false;
+  }
+
+  // returns the enemy index if any enemy is hit on a given tile
+  hitEnemyTile(tileX, tileY) {
+    for (let index in this.enemies) {
+      if (
+        this.enemies[index].tileX === tileX &&
+        this.enemies[index].tileY === tileY
+      ) {
+        return index;
+      }
+    }
+    return null;
   }
 
   // returns true if the tile given is in a valid location
