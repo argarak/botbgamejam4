@@ -561,11 +561,13 @@ class Enemy {
   // returns the enemy index if any enemy is hit on a given tile
   hitEnemyTile(tileX, tileY) {
     for (let index in this.enemies) {
-      if (
-        this.enemies[index].tileX === tileX &&
-        this.enemies[index].tileY === tileY
-      ) {
-        return index;
+      if (this.enemies[0].health > 0) {
+        if (
+          this.enemies[index].tileX === tileX &&
+          this.enemies[index].tileY === tileY
+        ) {
+          return index;
+        }
       }
     }
     return null;
