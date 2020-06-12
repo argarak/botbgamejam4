@@ -455,26 +455,60 @@ class Player {
 
 var player = new Player();
 
+//148 * 16;
+//63 * 16;
+
 class Enemy {
   constructor() {
     this.bug = 0;
     this.enemies = [
       {
         type: this.bug,
-        tileX: 0,
-        tileY: 0,
-        ai: this.bugAI(),
+        xpos: 149 * 16,
+        ypos: 64 * 16,
+        ai: this.bugAI,
+        health: 100
+      },
+
+      {
+        type: this.bug,
+        xpos: 150 * 16,
+        ypos: 65 * 16,
+        ai: this.bugAI,
         health: 100
       }
     ];
   }
 
   bugAI() {
+    function distanceToPlayer(enemyX, enemyY) {
+      return Math.sqrt(
+        Math.pow(enemyX - player.xpos, 2) + Math.pow(enemyY - player.ypos, 2)
+      );
+    }
+
     //
+    console.log(distanceToPlayer(this.xpos, this.ypos));
   }
 
-  draw() {}
+  getIcon(type) {
+    if (type === this.bug) {
+      return botbIcon.getIcon("bug");
+    }
+    return null;
+  }
+
+  draw() {
+    for (let enemy of this.enemies) {
+      let xdraw = graphics.canvas.width / 2 + (enemy.xpos - player.xpos);
+      let ydraw = graphics.canvas.height / 2 + (enemy.ypos - player.ypos);
+
+      graphics.drawIcon(this.getIcon(enemy.type), xdraw, ydraw);
+    }
+  }
 }
+
+var enemy = new Enemy();
 
 document.addEventListener("keydown", e => {
   if (e.code === "KeyW") {
@@ -542,6 +576,7 @@ function gameLoad() {
     var camY = -player.ypos + graphics.canvas.height / 2;
 
     graphics.ctx.drawImage(graphics.mapcanvas, camX, camY);
+    enemy.draw();
     graphics.drawLightMap();
     player.draw();
 
