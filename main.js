@@ -134,7 +134,6 @@ class Graphics {
           }
         }
         if (this.currentRoom !== room) {
-          console.log("entering new room!");
           this.currentRoom = room;
           this.currentRoomNameValue = "room of " + name;
           this.roomNameElement.innerHTML = this.currentRoomNameValue;
@@ -456,6 +455,27 @@ class Player {
 
 var player = new Player();
 
+class Enemy {
+  constructor() {
+    this.bug = 0;
+    this.enemies = [
+      {
+        type: this.bug,
+        tileX: 0,
+        tileY: 0,
+        ai: this.bugAI(),
+        health: 100
+      }
+    ];
+  }
+
+  bugAI() {
+    //
+  }
+
+  draw() {}
+}
+
 document.addEventListener("keydown", e => {
   if (e.code === "KeyW") {
     player.movingUp = true;
@@ -504,12 +524,6 @@ document.addEventListener("mousemove", e => {
   );
 });
 
-function clamp(value, min, max) {
-  if (value < min) return min;
-  else if (value > max) return max;
-  return value;
-}
-
 function gameLoad() {
   graphics.drawMap();
 
@@ -538,8 +552,9 @@ function gameLoad() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  graphics.spritesheet.addEventListener("load", gameLoad, false);
   if (graphics.spritesheet.complete) {
     gameLoad();
+  } else {
+    graphics.spritesheet.addEventListener("load", gameLoad, false);
   }
 });
