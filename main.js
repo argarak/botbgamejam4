@@ -455,19 +455,18 @@ class Player {
 
 var player = new Player();
 
-//148 * 16;
-//63 * 16;
-
 class Enemy {
   constructor() {
     this.bug = 0;
+    this.tick = 0;
+    this.maxTick = 1000;
     this.enemies = [
       {
         type: this.bug,
         tileX: 149,
         tileY: 61,
         health: 100,
-        speed: 1,
+        activateTickMultiple: this.randint(45, 65),
         visitedTiles: []
       },
       {
@@ -475,7 +474,31 @@ class Enemy {
         tileX: 150,
         tileY: 61,
         health: 100,
-        speed: 1,
+        activateTickMultiple: this.randint(45, 65),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 151,
+        tileY: 61,
+        health: 100,
+        activateTickMultiple: this.randint(45, 65),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 152,
+        tileY: 61,
+        health: 100,
+        activateTickMultiple: this.randint(45, 65),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 153,
+        tileY: 61,
+        health: 100,
+        activateTickMultiple: this.randint(45, 65),
         visitedTiles: []
       }
     ];
@@ -521,11 +544,17 @@ class Enemy {
     for (let visitedTile of enemy.visitedTiles) {
       //console.log(visitedTile);
       if (visitedTile[0] === tileX && visitedTile[1] === tileY) {
-        console.log("true");
         return true;
       }
     }
     return false;
+  }
+
+  // random integer (inclusive)
+  randint(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   // the most basic enemy ai
@@ -541,6 +570,15 @@ class Enemy {
   bugAI(enemy) {
     let tileX = enemy.tileX;
     let tileY = enemy.tileY;
+
+    if (
+      tileX ===
+        Math.round(player.xpos / graphics.tileSize) * graphics.tileSize &&
+      tileY === Math.round(player.ypos / graphics.tileSize) * graphics.tileSize
+    ) {
+      // player get hurt
+      return;
+    }
 
     let allTiles = [
       [tileX + 1, tileY],
@@ -563,6 +601,11 @@ class Enemy {
       ) {
         validTiles.push(tile);
       }
+    }
+
+    if (validTiles.length === 0) {
+      enemy.visitedTiles = [];
+      return;
     }
 
     let minTileIndex = 0;
@@ -589,6 +632,9 @@ class Enemy {
   }
 
   handleEnemyAI(enemy) {
+    if (this.tick % enemy.activateTickMultiple !== 0) {
+      return;
+    }
     if (enemy.type == this.bug) {
       this.bugAI(enemy);
     }
@@ -602,12 +648,13 @@ class Enemy {
   }
 
   draw() {
+    this.tick = (this.tick + 1) % this.maxTick;
     for (let enemy of this.enemies) {
       if (enemy.health < 1) {
         continue;
       }
 
-      //this.handleEnemyAI(enemy);
+      this.handleEnemyAI(enemy);
 
       let xdraw =
         graphics.canvas.width / 2 +
