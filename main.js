@@ -613,6 +613,11 @@ class Enemy {
       activationDistance: 300,
       maxHealth: 300
     };
+    this.mummi = {
+      icon: botbIcon.getIcon("mummi"),
+      activationDistance: 300,
+      maxHealth: 300
+    };
     this.tick = 0;
     this.maxTick = 1000;
     this.bugTickMultiple = () => {
@@ -623,9 +628,6 @@ class Enemy {
     };
     this.pumpkingTickMultiple = () => {
       return this.randint(25, 35);
-    };
-    this.batTickMultiple = () => {
-      return this.randint(10, 20);
     };
     this.enemies = [
       // {
@@ -660,44 +662,36 @@ class Enemy {
       //   activateTickMultiple: this.pumpkingTickMultiple(),
       //   visitedTiles: []
       // },
+      // {
+      //   type: this.bat,
+      //   tileX: 159,
+      //   tileY: 61,
+      //   health: this.bat.maxHealth,
+      //   activateTickMultiple: this.batTickMultiple(),
+      //   visitedTiles: []
+      // },
       {
-        type: this.bat,
+        type: this.mummi,
         tileX: 159,
         tileY: 61,
-        health: this.bat.maxHealth,
-        activateTickMultiple: this.batTickMultiple(),
+        health: this.mummi.maxHealth,
+        activateTickMultiple: 0,
         visitedTiles: []
       },
       {
-        type: this.bat,
+        type: this.mummi,
         tileX: 159,
         tileY: 63,
-        health: this.bat.maxHealth,
-        activateTickMultiple: this.batTickMultiple(),
+        health: this.mummi.maxHealth,
+        activateTickMultiple: 0,
         visitedTiles: []
       },
       {
-        type: this.bat,
+        type: this.mummi,
         tileX: 159,
         tileY: 65,
-        health: this.bat.maxHealth,
-        activateTickMultiple: this.batTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bat,
-        tileX: 159,
-        tileY: 67,
-        health: this.bat.maxHealth,
-        activateTickMultiple: this.batTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bat,
-        tileX: 159,
-        tileY: 69,
-        health: this.bat.maxHealth,
-        activateTickMultiple: this.batTickMultiple(),
+        health: this.mummi.maxHealth,
+        activateTickMultiple: 0,
         visitedTiles: []
       }
     ];
@@ -713,6 +707,8 @@ class Enemy {
         return this.randint(25, 50);
       case this.bat:
         return this.randint(30, 40);
+      case this.mummi:
+        return this.randint(50, 60);
     }
     return 0;
   }
@@ -727,6 +723,8 @@ class Enemy {
         return this.randint(10, 12);
       case this.bat:
         return this.randint(5, 7);
+      case this.mummi:
+        return 15;
     }
     return 0;
   }
@@ -959,6 +957,15 @@ class Enemy {
       }
     }
 
+    if (enemy.type == this.mummi) {
+      let distance = this.distanceToPlayer(enemy.tileX, enemy.tileY);
+      if (distance > 10) {
+        enemy.activateTickMultiple = Math.round(distance / 2);
+      } else {
+        enemy.activateTickMultiple = 50;
+      }
+    }
+
     if (this.tick % enemy.activateTickMultiple !== 0) {
       return;
     }
@@ -973,6 +980,7 @@ class Enemy {
       case this.bug:
       case this.rat:
       case this.pumpking:
+      case this.mummi:
         this.bugAI(enemy);
         break;
       case this.bat:
