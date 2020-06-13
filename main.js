@@ -224,6 +224,58 @@ class Player {
     this.ypos = 63 * 16;
     this.icon = botbIcon.getIcon("hostist");
 
+    this.playerClass = "n00b";
+    this.xp = 0;
+    this.level = 0;
+
+    this.xpLevels = [
+      0,
+      25,
+      34,
+      41,
+      53,
+      73,
+      109,
+      173,
+      284,
+      477,
+      816,
+      1290,
+      1922,
+      2682,
+      3478,
+      4331,
+      5421,
+      6500,
+      7677,
+      9872,
+      10266,
+      11677,
+      12796,
+      16856,
+      21799,
+      28640,
+      36512,
+      45596,
+      56049,
+      72335,
+      92645,
+      118353,
+      245792,
+      510494,
+      1060247,
+      99999999
+    ];
+
+    this.levelTextElement = document.getElementById("level");
+    this.levelProgressElement = document.getElementById("levelxp");
+
+    this.nearestTileX = 0;
+    this.nearestTileY = 0;
+    this.health = 100;
+    this.healthTextElement = document.getElementById("health");
+    this.healthProgressElement = document.getElementById("hp");
+
     // player movement
     this.speedX = 0;
     this.speedY = 0;
@@ -304,8 +356,11 @@ class Player {
     graphics.camX = this.xpos;
     graphics.camY = this.ypos;
 
-    graphics.lightsources[0].tileX = Math.round(this.xpos / graphics.tileSize);
-    graphics.lightsources[0].tileY = Math.round(this.ypos / graphics.tileSize);
+    this.nearestTileX = Math.round(this.xpos / graphics.tileSize);
+    this.nearestTileY = Math.round(this.ypos / graphics.tileSize);
+
+    graphics.lightsources[0].tileX = this.nearestTileX;
+    graphics.lightsources[0].tileY = this.nearestTileY;
   }
 
   // return true if the given x and y position is in bounds given a specific room
@@ -413,6 +468,32 @@ class Player {
     }
   }
 
+  updateHealth() {
+    this.healthTextElement.innerHTML = "health: " + this.health + "/100";
+    this.healthProgressElement.value = this.health;
+  }
+
+  updateXp() {
+    // calculate level based xp bonus
+    this.xp = this.xp * Math.pow(Math.E, (this.level - 7) / 10);
+
+    for (let xpLevel = this.xpLevels.length - 1; xpLevel > 0; xpLevel--) {
+      if (this.xpLevels[xpLevel] < this.xp) {
+        this.level = xpLevel;
+        break;
+      }
+    }
+
+    this.levelTextElement.innerHTML =
+      "level " + this.level + " " + this.playerClass;
+    if (this.level === 34) {
+      this.levelProgressElement.value = 100;
+    } else {
+      this.levelProgressElement.value =
+        this.xp / this.xpLevels[this.level + 1] * 100;
+    }
+  }
+
   weaponDraw() {
     graphics.ctx.setTransform(
       1,
@@ -456,6 +537,11 @@ class Player {
 
       if (enemyIndex) {
         enemy.enemies[enemyIndex].health -= this.weaponDamage;
+
+        if (enemy.enemies[enemyIndex].health < 1) {
+          this.xp += enemy.getXp(enemy.enemies[enemyIndex].type);
+          this.updateXp();
+        }
 
         enemy.enemies[enemyIndex].tileX += Math.round(
           Math.sin((this.mouseAngle - 90) * Math.PI / 180) *
@@ -599,6 +685,22 @@ class Enemy {
     ];
   }
 
+  getXp(type) {
+    switch (type) {
+      case this.bug:
+        return this.randint(20, 30);
+    }
+    return 0;
+  }
+
+  getDamage(type) {
+    switch (type) {
+      case this.bug:
+        return this.randint(5, 7);
+    }
+    return 0;
+  }
+
   distanceToPlayer(tileX, tileY) {
     return Math.sqrt(
       Math.pow(tileX * graphics.tileSize - player.xpos, 2) +
@@ -682,6 +784,11 @@ class Enemy {
     let tileY = enemy.tileY;
 
     let distance = this.distanceToPlayer(tileX, tileY);
+
+    if (tileX == player.nearestTileX && tileY == player.nearestTileY) {
+      player.health -= this.getDamage(enemy.type);
+      player.updateHealth();
+    }
 
     if (distance < 10) {
       // player get hurt
@@ -859,6 +966,8 @@ document.addEventListener("mousemove", e => {
 
 function gameLoad() {
   graphics.drawMap();
+  player.updateXp();
+  player.updateHealth();
 
   document.getElementById("mapCanvas").addEventListener("click", e => {
     e.target.style.display = "none";
