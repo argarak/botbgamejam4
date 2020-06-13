@@ -222,7 +222,7 @@ class Player {
   constructor() {
     this.xpos = 148 * 16;
     this.ypos = 63 * 16;
-    this.icon = botbIcon.getIcon("hostist");
+    this.icon = botbIcon.getIcon("n00b");
 
     this.playerClass = "n00b";
     this.xp = 0;
@@ -474,9 +474,6 @@ class Player {
   }
 
   updateXp() {
-    // calculate level based xp bonus
-    this.xp = this.xp * Math.pow(Math.E, (this.level - 7) / 10);
-
     for (let xpLevel = this.xpLevels.length - 1; xpLevel > 0; xpLevel--) {
       if (this.xpLevels[xpLevel] < this.xp) {
         this.level = xpLevel;
@@ -490,7 +487,9 @@ class Player {
       this.levelProgressElement.value = 100;
     } else {
       this.levelProgressElement.value =
-        this.xp / this.xpLevels[this.level + 1] * 100;
+        (this.xp - this.xpLevels[this.level]) /
+        this.xpLevels[this.level + 1] *
+        100;
     }
   }
 
@@ -540,6 +539,9 @@ class Player {
 
         if (enemy.enemies[enemyIndex].health < 1) {
           this.xp += enemy.getXp(enemy.enemies[enemyIndex].type);
+
+          // calculate xp level bonus
+          this.xp = this.xp * Math.pow(Math.E, (this.level - 7) / 20);
           this.updateXp();
         }
 
@@ -995,6 +997,28 @@ function gameLoad() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("grafxicist").addEventListener("click", e => {
+    if (player.playerClass === "n00b") {
+      player.playerClass = "grafxicist";
+      player.icon = botbIcon.getIcon("grafxicist");
+      player.updateXp();
+    }
+  });
+  document.getElementById("chipist").addEventListener("click", e => {
+    if (player.playerClass === "n00b") {
+      player.playerClass = "chipist";
+      player.icon = botbIcon.getIcon("chipist");
+      player.updateXp();
+    }
+  });
+  document.getElementById("hostist").addEventListener("click", e => {
+    if (player.playerClass === "n00b") {
+      player.playerClass = "hostist";
+      player.icon = botbIcon.getIcon("hostist");
+      player.updateXp();
+    }
+  });
+
   if (graphics.spritesheet.complete) {
     gameLoad();
   } else {
