@@ -775,6 +775,14 @@
              width: 100vw;
              height: 100vh;
              background: #000;
+    
+             font-family: "mainfont";
+             font-size: 14px;
+         }
+
+         @font-face {
+             font-family: "mainfont";
+             src: url("gohufont.ttf")  format("truetype");
          }
 
          canvas {
@@ -811,6 +819,22 @@
              background-color: rgba(0,0,0,0.5);
          }
 
+         #mapButton {
+             font-family: "mainfont";
+             font-size: 14px;
+             margin-top: 20px;
+             border: solid 5px #070707;
+             border-radius: 150px;
+             padding: 5px 20px;
+             background-color: #111;
+             color: #fff;
+             
+             transition: background-color 0.2s ease;
+         }
+
+         #mapButton:hover {
+             background-color: #222;
+         }
         </style>
         <title>welcome to the game!</title>
     </head>
