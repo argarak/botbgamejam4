@@ -1,4 +1,6 @@
 ** current list of minor bugs:
 
+- players don't take damage unless player is on enemy tile during enemy activation tick
+- knockback can knock enemies into the void
 - players collide with corners between 2+ rooms, probably wontfix
 - if pushing up against a wall and moving in the x axis, it is possible to get stuck in the edge between rooms

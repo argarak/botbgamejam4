@@ -595,11 +595,23 @@ class Enemy {
   constructor() {
     this.bug = {
       icon: botbIcon.getIcon("bug"),
-      activationDistance: 250
+      activationDistance: 250,
+      maxHealth: 100
     };
     this.rat = {
       icon: botbIcon.getIcon("rat"),
-      activationDistance: 250
+      activationDistance: 250,
+      maxHealth: 100
+    };
+    this.bat = {
+      icon: botbIcon.getIcon("actualbat"),
+      activationDistance: 200,
+      maxHealth: 100
+    };
+    this.pumpking = {
+      icon: botbIcon.getIcon("pumpking"),
+      activationDistance: 300,
+      maxHealth: 300
     };
     this.tick = 0;
     this.maxTick = 1000;
@@ -609,23 +621,83 @@ class Enemy {
     this.ratTickMultiple = () => {
       return this.randint(17, 25);
     };
+    this.pumpkingTickMultiple = () => {
+      return this.randint(25, 35);
+    };
+    this.batTickMultiple = () => {
+      return this.randint(10, 20);
+    };
     this.enemies = [
+      // {
+      //   type: this.bug,
+      //   tileX: 149,
+      //   tileY: 61,
+      //   health: this.bug.maxHealth,
+      //   activateTickMultiple: this.bugTickMultiple(),
+      //   visitedTiles: []
+      // },
+      // {
+      //   type: this.rat,
+      //   tileX: 153,
+      //   tileY: 61,
+      //   health: this.rat.maxHealth,
+      //   activateTickMultiple: this.ratTickMultiple(),
+      //   visitedTiles: []
+      // },
+      // {
+      //   type: this.pumpking,
+      //   tileX: 155,
+      //   tileY: 61,
+      //   health: this.pumpking.maxHealth,
+      //   activateTickMultiple: this.ratTickMultiple(),
+      //   visitedTiles: []
+      // },
+      // {
+      //   type: this.pumpking,
+      //   tileX: 157,
+      //   tileY: 61,
+      //   health: this.pumpking.maxHealth,
+      //   activateTickMultiple: this.pumpkingTickMultiple(),
+      //   visitedTiles: []
+      // },
       {
-        type: this.bug,
-        tileX: 149,
+        type: this.bat,
+        tileX: 159,
         tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
+        health: this.bat.maxHealth,
+        activateTickMultiple: this.batTickMultiple(),
         visitedTiles: []
       },
       {
-        type: this.rat,
-        tileX: 153,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.ratTickMultiple(),
+        type: this.bat,
+        tileX: 159,
+        tileY: 63,
+        health: this.bat.maxHealth,
+        activateTickMultiple: this.batTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bat,
+        tileX: 159,
+        tileY: 65,
+        health: this.bat.maxHealth,
+        activateTickMultiple: this.batTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bat,
+        tileX: 159,
+        tileY: 67,
+        health: this.bat.maxHealth,
+        activateTickMultiple: this.batTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bat,
+        tileX: 159,
+        tileY: 69,
+        health: this.bat.maxHealth,
+        activateTickMultiple: this.batTickMultiple(),
         visitedTiles: []
       }
     ];
@@ -635,8 +707,12 @@ class Enemy {
     switch (type) {
       case this.bug:
         return this.randint(20, 30);
-      case this.bug:
+      case this.rat:
         return this.randint(15, 25);
+      case this.pumpking:
+        return this.randint(25, 50);
+      case this.bat:
+        return this.randint(30, 40);
     }
     return 0;
   }
@@ -647,6 +723,10 @@ class Enemy {
         return this.randint(5, 7);
       case this.rat:
         return this.randint(3, 4);
+      case this.pumpking:
+        return this.randint(10, 12);
+      case this.bat:
+        return this.randint(5, 7);
     }
     return 0;
   }
@@ -796,7 +876,89 @@ class Enemy {
     enemy.tileY = validTiles[minTileIndex][1];
   }
 
+  // similar to bugAI but a bit more jittery and random
+  // oh and a lot more irritating lol
+  batAI(enemy) {
+    let tileX = enemy.tileX;
+    let tileY = enemy.tileY;
+
+    let distance = this.distanceToPlayer(tileX, tileY);
+
+    if (tileX == player.nearestTileX && tileY == player.nearestTileY) {
+      player.health -= this.getDamage(enemy.type);
+      player.updateHealth();
+    }
+
+    if (distance < 10) {
+      // player get hurt
+      return;
+    }
+
+    let allTiles = [
+      [tileX + 1, tileY],
+      [tileX - 1, tileY],
+      [tileX, tileY + 1],
+      [tileX, tileY - 1],
+      [tileX + 1, tileY + 1],
+      [tileX - 1, tileY - 1],
+      [tileX + 1, tileY - 1],
+      [tileX - 1, tileY + 1]
+    ];
+
+    let validTiles = [];
+
+    for (let tile of allTiles) {
+      if (
+        this.roomTile(tile[0], tile[1]) &&
+        !this.enemyTile(tile[0], tile[1]) &&
+        !this.visitedTile(enemy, tile[0], tile[1])
+      ) {
+        validTiles.push(tile);
+      }
+    }
+
+    if (validTiles.length === 0) {
+      enemy.visitedTiles = [];
+      return;
+    }
+
+    let minTileIndex = 0;
+
+    for (let tileIndex = 0; tileIndex < validTiles.length; tileIndex++) {
+      let minDistance = this.distanceToPlayer(
+        validTiles[minTileIndex][0],
+        validTiles[minTileIndex][1]
+      );
+      let currDistance = this.distanceToPlayer(
+        validTiles[tileIndex][0],
+        validTiles[tileIndex][1]
+      );
+
+      if (currDistance < minDistance) {
+        minTileIndex = tileIndex;
+      }
+    }
+
+    // 1/3 times randomly move about
+    if (this.randint(0, 2) == 0) {
+      minTileIndex = this.randint(0, validTiles.length - 1);
+    }
+
+    enemy.visitedTiles.push(validTiles[minTileIndex]);
+
+    enemy.tileX = validTiles[minTileIndex][0];
+    enemy.tileY = validTiles[minTileIndex][1];
+  }
+
   handleEnemyAI(enemy) {
+    if (enemy.type == this.bat) {
+      if (this.randint(0, 1) == 0) {
+        enemy.activateTickMultiple = 5;
+      } else {
+        enemy.activateTickMultiple = 40;
+      }
+    }
+
     if (this.tick % enemy.activateTickMultiple !== 0) {
       return;
     }
@@ -810,13 +972,16 @@ class Enemy {
     switch (enemy.type) {
       case this.bug:
       case this.rat:
+      case this.pumpking:
         this.bugAI(enemy);
         break;
+      case this.bat:
+        this.batAI(enemy);
     }
   }
 
   drawHealthBar(enemy, xdraw, ydraw) {
-    let fractionHealth = enemy.health / enemy.maxHealth;
+    let fractionHealth = enemy.health / enemy.type.maxHealth;
 
     if (fractionHealth === 1) {
       return;
