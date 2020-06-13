@@ -863,18 +863,109 @@
              width: 300px;
          }
 
-         #hp::-webkit-progress-value { 
-             background: #f44336; 
+         #hp::-webkit-progress-value {
+             background: #f44336;
          }
 
-         #hp::-moz-progress-bar { 
-             background: #f44336; 
+         #hp::-moz-progress-bar {
+             background: #f44336;
+         }
+
+         #class {
+             position: fixed;
+             left: 0;
+             top: 20vh;
+             width: 200px;
+             background-color: #000;
+             color: #fff;
+             padding: 20px;
+         }
+
+         .upgrade {
+             display: flex;
+             flex-direction: row;
+             align-items: center;
+         }
+
+         .upgradeName {
+             margin-right: 20px;
+         }
+
+         .upgradeValue {
+             margin: 5px;
+         }
+
+         #classOptions {
+             display: flex;
+             flex-direction: row;
+         }
+
+         .classOption {
+             margin: 10px;
+         }
+
+         .classOption button {
+             width: 30px;
+             height: 30px;
+             background-color: #444;
+         }
+
+         .classOption button img {
+             width: 24px;
+             margin-left: -11px;
+         }
+
+         .upgrade button {
+             height: 20px;
+             padding: -5px 5px;
+             padding-bottom: 20px;
+             border: solid 2px #111;
+             vertical-align: middle;
+
+             background-color: #111;
+             color: #fff;
          }
         </style>
         <title>welcome to the game!</title>
     </head>
 
     <body>
+        <div id="class">
+            <h3>player class</h3>
+            <div id="classOptions">
+                <div class="classOption">
+                    <button><img alt="" src="hostist.png"/></button>
+                    <div class="classCaption">Hostist</div>
+                </div>
+                <div class="classOption">
+                    <button><img alt="" src="grafixist.png"/></button>
+                    <div class="classCaption">Grafixist</div>
+                </div>
+                <div class="classOption">
+                    <button><img alt="" src="chipist.png"/></button>
+                    <div class="classCaption">Chipist</div>
+                </div>
+            </div>
+            <h5>skill points: 2</h5>
+
+            <div id="upgradeOptions">
+                <div class="upgrade">
+                    <div class="upgradeName">health</div>
+                    <div class="upgradeValue">1.1</div>
+                    <button>+</button>
+                </div>
+                <div class="upgrade">
+                    <div class="upgradeName">damage</div>
+                    <div class="upgradeValue">1.1</div>
+                    <button>+</button>
+                </div>
+                <div class="upgrade">
+                    <div class="upgradeName">firing speed</div>
+                    <div class="upgradeValue">1.1</div>
+                    <button>+</button>
+                </div>
+            </div>
+        </div>
         <div id="infoContainer">
             <div id="healthContainer">
                 <div id="health">health: 50/100</div>
