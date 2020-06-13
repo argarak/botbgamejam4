@@ -236,12 +236,13 @@ class Player {
     this.weaponFire = false;
     this.weaponDistance = 5;
     this.meleeDistance = this.weaponDistance;
-    this.maxMeleeDistance = 40;
+    this.maxMeleeDistance = 16 * 3;
     this.meleeSwingSpeed = 1.1;
     this.weaponTileX = 0;
     this.weaponTileY = 0;
     this.weaponDamage = 50;
     this.weaponPositionCompensationFactor = 1.5;
+    this.weaponKnockback = 32;
 
     this.movingUp = false;
     this.movingDown = false;
@@ -455,6 +456,19 @@ class Player {
 
       if (enemyIndex) {
         enemy.enemies[enemyIndex].health -= this.weaponDamage;
+
+        enemy.enemies[enemyIndex].tileX += Math.round(
+          Math.sin((this.mouseAngle - 90) * Math.PI / 180) *
+            this.weaponKnockback /
+            graphics.tileSize
+        );
+
+        enemy.enemies[enemyIndex].tileY += Math.round(
+          Math.cos((this.mouseAngle + 90) * Math.PI / 180) *
+            this.weaponKnockback /
+            graphics.tileSize
+        );
+
         this.weaponFire = false;
       }
     }
@@ -497,6 +511,9 @@ class Enemy {
     };
     this.tick = 0;
     this.maxTick = 1000;
+    this.bugTickMultiple = () => {
+      return this.randint(12, 20);
+    };
     this.enemies = [
       {
         type: this.bug,
@@ -504,7 +521,7 @@ class Enemy {
         tileY: 61,
         health: 100,
         maxHealth: 100,
-        activateTickMultiple: this.randint(45, 65),
+        activateTickMultiple: this.bugTickMultiple(),
         visitedTiles: []
       },
       {
@@ -513,7 +530,7 @@ class Enemy {
         tileY: 61,
         health: 100,
         maxHealth: 100,
-        activateTickMultiple: this.randint(25, 65),
+        activateTickMultiple: this.bugTickMultiple(),
         visitedTiles: []
       },
       {
@@ -522,7 +539,7 @@ class Enemy {
         tileY: 61,
         health: 100,
         maxHealth: 100,
-        activateTickMultiple: this.randint(25, 65),
+        activateTickMultiple: this.bugTickMultiple(),
         visitedTiles: []
       },
       {
@@ -531,7 +548,7 @@ class Enemy {
         tileY: 61,
         health: 100,
         maxHealth: 100,
-        activateTickMultiple: this.randint(25, 65),
+        activateTickMultiple: this.bugTickMultiple(),
         visitedTiles: []
       },
       {
@@ -540,7 +557,43 @@ class Enemy {
         tileY: 61,
         health: 100,
         maxHealth: 100,
-        activateTickMultiple: this.randint(25, 65),
+        activateTickMultiple: this.bugTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 154,
+        tileY: 61,
+        health: 100,
+        maxHealth: 100,
+        activateTickMultiple: this.bugTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 155,
+        tileY: 61,
+        health: 100,
+        maxHealth: 100,
+        activateTickMultiple: this.bugTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 156,
+        tileY: 61,
+        health: 100,
+        maxHealth: 100,
+        activateTickMultiple: this.bugTickMultiple(),
+        visitedTiles: []
+      },
+      {
+        type: this.bug,
+        tileX: 157,
+        tileY: 61,
+        health: 100,
+        maxHealth: 100,
+        activateTickMultiple: this.bugTickMultiple(),
         visitedTiles: []
       }
     ];

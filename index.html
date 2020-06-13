@@ -772,10 +772,10 @@
              justify-content: center;
              align-items: center;
 
-             width: 100vw;
-             height: 100vh;
+             
+             min-height: 100vh;
              background: #000;
-    
+             
              font-family: "mainfont";
              font-size: 14px;
          }
@@ -828,18 +828,64 @@
              padding: 5px 20px;
              background-color: #111;
              color: #fff;
-             
+
              transition: background-color 0.2s ease;
          }
 
          #mapButton:hover {
              background-color: #222;
          }
+
+         #infoContainer {
+             color: #fff;
+             margin-bottom: 20px;
+             display: flex;
+             flex-direction: row;
+         }
+
+         #levelxp, #hp {
+             height: 5px;
+             background-color: #000;
+             border: solid 1px #fff;
+             border-radius: 50px;
+             color: #f44336;
+         }
+
+         #levelxp::-webkit-progress-value { 
+             background: #4CAF50; 
+         }
+
+         #levelxp::-moz-progress-bar { 
+             background: #4CAF50; 
+         }
+
+         #spacer {
+             width: 300px;
+         }
+
+         #hp::-webkit-progress-value { 
+             background: #f44336; 
+         }
+
+         #hp::-moz-progress-bar { 
+             background: #f44336; 
+         }
         </style>
         <title>welcome to the game!</title>
     </head>
 
     <body>
+        <div id="infoContainer">
+            <div id="healthContainer">
+                <div id="health">health: 50/100</div>
+                <progress id="hp" max="100" value="50"></progress>
+            </div>
+            <div id="spacer"></div>
+            <div id="levelContainer">
+                <div id="level">level 0 n00b</div>
+                <progress id="levelxp" max="100" value="20"></progress>
+            </div>
+        </div>
         <img id="spritesheet" alt="" src="botb-spritesheet.png"/>
         <!-- this canvas is for rendering the entire map -->
         <!-- <canvas id="mapCanvas" width="2560" height="1920"></canvas> -->
