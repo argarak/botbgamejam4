@@ -288,7 +288,7 @@ class Player {
     this.weaponFire = false;
     this.weaponDistance = 5;
     this.meleeDistance = this.weaponDistance;
-    this.maxMeleeDistance = 16 * 3;
+    this.maxMeleeDistance = 16 * 1.6;
     this.meleeSwingSpeed = 1.1;
     this.weaponTileX = 0;
     this.weaponTileY = 0;
@@ -597,10 +597,17 @@ class Enemy {
       icon: botbIcon.getIcon("bug"),
       activationDistance: 250
     };
+    this.rat = {
+      icon: botbIcon.getIcon("rat"),
+      activationDistance: 250
+    };
     this.tick = 0;
     this.maxTick = 1000;
     this.bugTickMultiple = () => {
       return this.randint(12, 20);
+    };
+    this.ratTickMultiple = () => {
+      return this.randint(17, 25);
     };
     this.enemies = [
       {
@@ -613,75 +620,12 @@ class Enemy {
         visitedTiles: []
       },
       {
-        type: this.bug,
-        tileX: 150,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
-        tileX: 151,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
-        tileX: 152,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
+        type: this.rat,
         tileX: 153,
         tileY: 61,
         health: 100,
         maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
-        tileX: 154,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
-        tileX: 155,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
-        tileX: 156,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
-        visitedTiles: []
-      },
-      {
-        type: this.bug,
-        tileX: 157,
-        tileY: 61,
-        health: 100,
-        maxHealth: 100,
-        activateTickMultiple: this.bugTickMultiple(),
+        activateTickMultiple: this.ratTickMultiple(),
         visitedTiles: []
       }
     ];
@@ -691,6 +635,8 @@ class Enemy {
     switch (type) {
       case this.bug:
         return this.randint(20, 30);
+      case this.bug:
+        return this.randint(15, 25);
     }
     return 0;
   }
@@ -699,6 +645,8 @@ class Enemy {
     switch (type) {
       case this.bug:
         return this.randint(5, 7);
+      case this.rat:
+        return this.randint(3, 4);
     }
     return 0;
   }
@@ -859,16 +807,12 @@ class Enemy {
       return;
     }
 
-    if (enemy.type == this.bug) {
-      this.bugAI(enemy);
+    switch (enemy.type) {
+      case this.bug:
+      case this.rat:
+        this.bugAI(enemy);
+        break;
     }
-  }
-
-  getIcon(type) {
-    if (type === this.bug) {
-      return botbIcon.getIcon("bug");
-    }
-    return null;
   }
 
   drawHealthBar(enemy, xdraw, ydraw) {
@@ -910,7 +854,7 @@ class Enemy {
         graphics.canvas.height / 2 +
         (enemy.tileY * graphics.tileSize - player.ypos);
 
-      graphics.drawIcon(this.getIcon(enemy.type), xdraw, ydraw);
+      graphics.drawIcon(enemy.type.icon, xdraw, ydraw);
       this.drawHealthBar(enemy, xdraw, ydraw);
     }
   }
