@@ -1,0 +1,19 @@
+** current list of minor bugs:
+
+- players don't take damage unless player is on enemy tile during enemy activation tick
+
+this is one limitation of the fact that the player moves free-form but the enemies are bound to the grid. this is an issue when it comes to collision because it's a bit difficult to do, so I round the player's position to the nearest tile. one other problem is that enemies work using ticks, so only every couple of frames/ticks do enemies move. so you have to be standing on a tile occupied by an enemy, and you also must be on that tile during the tick of the enemy to actually take damage. this makes taking actual damage pretty difficult so it makes the game easy in that way. I didn't really have the time to fix this :(
+
+- knockback can knock enemies into the void
+
+generally a small issue because the knockback isn't too great (enemies get pushed back about 2 tiles) but it can mean that in rare situations, you can push enemies into the void and they will be unable to move because there are no valid tiles around them. make sure to be careful around how you're hitting enemies so that you can kill them all to progress to the next level.
+
+- players collide with corners between 2+ rooms, probably wontfix
+- if pushing up against a wall and moving in the x axis, it is possible to get stuck in the edge between rooms
+- old non-format trophy tiles are called "silver/gold/bronze 0"
+
+all these bugs are too minor to be worth fixing
+
+- oh btw the game crashes when you reach level 35
+
+you'll need a lot of xp, so that will take a while anyways (unless you're using the developer console). crashing is kinda intentional because there's no level 35 on botb (alternate ending??)
