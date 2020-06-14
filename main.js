@@ -289,12 +289,13 @@ class Player {
     this.weaponDistance = 5;
     this.meleeDistance = this.weaponDistance;
     this.maxMeleeDistance = 16 * 1.6;
-    this.meleeSwingSpeed = 1.1;
+    this.meleeSwingSpeed = 1.3;
     this.weaponTileX = 0;
     this.weaponTileY = 0;
     this.weaponDamage = 50;
     this.weaponPositionCompensationFactor = 1.5;
     this.weaponKnockback = 32;
+    this.mouseHeldDown = false;
 
     this.movingUp = false;
     this.movingDown = false;
@@ -565,6 +566,11 @@ class Player {
       //this.meleeDistance = this.weaponDistance;
       this.weaponFire = false;
     }
+
+    if (this.meleeDistance <= this.weaponDistance && this.mouseHeldDown) {
+      this.weaponFire = true;
+    }
+
     graphics.drawIcon(
       botbIcon.getIcon("battle"),
       this.meleeDistance,
@@ -617,6 +623,11 @@ class Enemy {
       icon: botbIcon.getIcon("mummi"),
       activationDistance: 300,
       maxHealth: 300
+    };
+    this.zombi = {
+      icon: botbIcon.getIcon("zombi"),
+      activationDistance: 300,
+      maxHealth: 200
     };
     this.tick = 0;
     this.maxTick = 1000;
@@ -693,6 +704,14 @@ class Enemy {
         health: this.mummi.maxHealth,
         activateTickMultiple: 0,
         visitedTiles: []
+      },
+      {
+        type: this.zombi,
+        tileX: 159,
+        tileY: 65,
+        health: this.zombi.maxHealth,
+        activateTickMultiple: 0,
+        visitedTiles: []
       }
     ];
   }
@@ -709,6 +728,8 @@ class Enemy {
         return this.randint(30, 40);
       case this.mummi:
         return this.randint(50, 60);
+      case this.zombi:
+        return this.randint(40, 50);
     }
     return 0;
   }
@@ -724,6 +745,7 @@ class Enemy {
       case this.bat:
         return this.randint(5, 7);
       case this.mummi:
+      case this.zombi:
         return 15;
     }
     return 0;
@@ -966,6 +988,15 @@ class Enemy {
       }
     }
 
+    if (enemy.type == this.zombi) {
+      let distance = this.distanceToPlayer(enemy.tileX, enemy.tileY);
+      if (distance > 10) {
+        enemy.activateTickMultiple = Math.round(distance);
+      } else {
+        enemy.activateTickMultiple = 50;
+      }
+    }
+
     if (this.tick % enemy.activateTickMultiple !== 0) {
       return;
     }
@@ -981,6 +1012,7 @@ class Enemy {
       case this.rat:
       case this.pumpking:
       case this.mummi:
+      case this.zombi:
         this.bugAI(enemy);
         break;
       case this.bat:
@@ -1073,6 +1105,20 @@ document.addEventListener("keyup", e => {
 
 document.addEventListener("click", e => {
   player.weaponFire = true;
+});
+
+document.addEventListener("mousedown", e => {
+  if (e.buttons === 1) {
+    player.mouseHeldDown = true;
+  } else {
+    player.mouseHeldDown = false;
+  }
+});
+
+document.addEventListener("mouseup", e => {
+  if (e.buttons !== 1) {
+    player.mouseHeldDown = false;
+  }
 });
 
 document.addEventListener("mousemove", e => {

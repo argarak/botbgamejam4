@@ -4,3 +4,14 @@
 - knockback can knock enemies into the void
 - players collide with corners between 2+ rooms, probably wontfix
 - if pushing up against a wall and moving in the x axis, it is possible to get stuck in the edge between rooms
+
+** really have to be done by sunday 8pm todos
+
+- [ ] background music and sfx
+- [ ] enemy spawning per map
+- [ ] being able to progress to another map
+- [ ] skill points and more things to add points onto
+- [ ] ending?
+- [ ] progression per level
+- [ ] saving player in browser
+- [ ] what do when player is ded??
