@@ -310,6 +310,9 @@ class Player {
     this.movingLeft = false;
     this.movingRight = false;
 
+    this.endingDisplayed = false;
+    this.endingElement = document.getElementById("ending");
+
     this.debug = false;
   }
 
@@ -488,6 +491,12 @@ class Player {
         this.level = xpLevel;
         break;
       }
+    }
+
+    if (this.level === 33 && !this.endingDisplayed) {
+      // end of game
+      this.endingDisplayed = true;
+      this.endingElement.style.display = "block";
     }
 
     this.levelTextElement.innerHTML =
@@ -1292,8 +1301,8 @@ graphics.nextLevelButton.addEventListener("click", e => {
 
   graphics.levelElement.innerHTML = "you're in level " + graphics.level;
 
-  player.health = 100;
-  player.updateHealth();
+  // player.health = 100;
+  // player.updateHealth();
 });
 
 function gameLoad() {
@@ -1301,6 +1310,10 @@ function gameLoad() {
   player.updateXp();
   player.updateHealth();
   enemy.spawnEnemies();
+
+  document.getElementById("continueButton").addEventListener("click", e => {
+    player.endingElement.style.display = "none";
+  });
 
   document.getElementById("mapCanvas").addEventListener("click", e => {
     e.target.style.display = "none";
@@ -1333,6 +1346,7 @@ document.addEventListener("DOMContentLoaded", () => {
       player.playerClass = "grafxicist";
       player.icon = botbIcon.getIcon("grafxicist");
       player.updateXp();
+      document.getElementById("class").style.display = "none";
     }
   });
   document.getElementById("chipist").addEventListener("click", e => {
@@ -1340,6 +1354,7 @@ document.addEventListener("DOMContentLoaded", () => {
       player.playerClass = "chipist";
       player.icon = botbIcon.getIcon("chipist");
       player.updateXp();
+      document.getElementById("class").style.display = "none";
     }
   });
   document.getElementById("hostist").addEventListener("click", e => {
@@ -1347,6 +1362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       player.playerClass = "hostist";
       player.icon = botbIcon.getIcon("hostist");
       player.updateXp();
+      document.getElementById("class").style.display = "none";
     }
   });
 

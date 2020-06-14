@@ -827,7 +827,8 @@
          }
 
          #mapButton,
-         #levelButton {
+         #levelButton,
+         #continueButton {
              font-family: "mainfont";
              font-size: 14px;
              margin-top: 20px;
@@ -938,14 +939,37 @@
          #buttonContainer {
              display: flex;
          }
+
+         #ending {
+             display: none;
+             position: fixed;
+             background-color: #272727cc;
+             color: #fff;
+
+             z-index: 999;
+             padding: 30px;
+             top: 100px;
+
+             width: 500px;
+             height: 150px;
+         }
         </style>
-        <title>welcome to the game!</title>
+        <title>botb.dungeon</title>
     </head>
 
     <body>
         <audio id="ambience" src="ambience.mp3" loop></audio>
       <audio id="killSound" src="kill.mp3"></audio>
       <audio id="hitSound" src="hit.mp3"></audio>
+
+      <div id="ending">
+          <h3>congratulations!</h3>
+
+          <p>by becoming level 33, you have achieved the status of grand wizard and the omnipotent baron has granted you the choice to escape the endless dungeon... or you can continue...</p>
+
+          <button id="continueButton">continue</button>
+      </div>
+
         <div id="class">
             <h3>player class</h3>
             <div id="classOptions">
@@ -962,25 +986,25 @@
                     <div class="classCaption">Chipist</div>
                 </div>
             </div>
-            <h5>skill points: 2</h5>
+            <!-- <h5>skill points: 2</h5>
 
-            <div id="upgradeOptions">
-                <div class="upgrade">
-                    <div class="upgradeName">health</div>
-                    <div class="upgradeValue">1.1</div>
-                    <button>+</button>
-                </div>
-                <div class="upgrade">
-                    <div class="upgradeName">damage</div>
-                    <div class="upgradeValue">1.1</div>
-                    <button>+</button>
-                </div>
-                <div class="upgrade">
-                    <div class="upgradeName">firing speed</div>
-                    <div class="upgradeValue">1.1</div>
-                    <button>+</button>
-                </div>
-            </div>
+                 <div id="upgradeOptions">
+                 <div class="upgrade">
+                 <div class="upgradeName">health</div>
+                 <div class="upgradeValue">1.1</div>
+                 <button>+</button>
+                 </div>
+                 <div class="upgrade">
+                 <div class="upgradeName">damage</div>
+                 <div class="upgradeValue">1.1</div>
+                 <button>+</button>
+                 </div>
+                 <div class="upgrade">
+                 <div class="upgradeName">firing speed</div>
+                 <div class="upgradeValue">1.1</div>
+                 <button>+</button>
+                 </div>
+                 </div> -->
         </div>
         <div id="infoContainer">
             <div id="healthContainer">
