@@ -49,6 +49,13 @@ class Graphics {
     this.roomNameElement = document.getElementById("roomName");
     this.currentRoomNameValue = "";
     this.currentRoom = this.rooms[0];
+
+    this.nextLevelButton = document.getElementById("levelButton");
+    this.levelElement = document.getElementById("dungeonLevel");
+  }
+
+  showNextLevelButton() {
+    this.nextLevelButton.style.display = "block";
   }
 
   clearScreen() {
@@ -540,6 +547,7 @@ class Player {
         enemy.enemies[enemyIndex].health -= this.weaponDamage;
 
         if (enemy.enemies[enemyIndex].health < 1) {
+          sound.killSound.play();
           let beforeXp = this.xp;
           //this.xp += enemy.getXp(enemy.enemies[enemyIndex].type);
 
@@ -549,6 +557,13 @@ class Player {
             Math.pow(Math.E, this.level / 6);
           console.log("you just got " + (this.xp - beforeXp) + " xp");
           this.updateXp();
+          let enemiesLeft = enemy.enemiesLeft();
+
+          if (enemiesLeft === 0) {
+            graphics.showNextLevelButton();
+          }
+        } else {
+          sound.hitSound.play();
         }
 
         enemy.enemies[enemyIndex].tileX += Math.round(
@@ -604,6 +619,7 @@ var player = new Player();
 
 class Enemy {
   constructor() {
+    this.enemiesLeftElement = document.getElementById("enemiesLeft");
     this.bug = {
       icon: botbIcon.getIcon("bug"),
       activationDistance: 250,
@@ -654,6 +670,20 @@ class Enemy {
       return this.randint(5, 10);
     };
     this.enemies = [];
+  }
+
+  enemiesLeft() {
+    let enemiesCount = 0;
+
+    for (let enemy of this.enemies) {
+      if (enemy.health > 0) {
+        enemiesCount++;
+      }
+    }
+
+    this.enemiesLeftElement.innerHTML = enemiesCount + " enemies left";
+
+    return enemiesCount;
   }
 
   spawnEnemies() {
@@ -765,6 +795,8 @@ class Enemy {
         }
       }
     }
+
+    this.enemiesLeft();
   }
 
   getXp(type) {
@@ -1158,6 +1190,17 @@ class Enemy {
 
 var enemy = new Enemy();
 
+class Sound {
+  constructor() {
+    this.ambience = document.getElementById("ambience");
+    this.killSound = document.getElementById("killSound");
+    this.hitSound = document.getElementById("hitSound");
+    this.ambiencePlaying = false;
+  }
+}
+
+var sound = new Sound();
+
 document.addEventListener("keydown", e => {
   if (e.code === "KeyW") {
     player.movingUp = true;
@@ -1213,11 +1256,44 @@ document.addEventListener("mouseup", e => {
 });
 
 document.addEventListener("mousemove", e => {
+  if (!sound.ambiencePlaying) {
+    sound.ambience.play();
+  }
+
   let relativex = document.body.clientWidth / 2 - e.clientX;
   let relativey = document.body.clientHeight / 2 - e.clientY;
   player.mouseAngle = Math.round(
     Math.atan2(relativey, relativex) * 180 / Math.PI
   );
+});
+
+graphics.nextLevelButton.addEventListener("click", e => {
+  graphics.nextLevelButton.style.display = "none";
+  graphics.level++;
+
+  // place player at default location
+  player.xpos = 148 * 16;
+  player.ypos = 63 * 16;
+
+  graphics.rooms = roomgen.generate();
+
+  graphics.mapctx.fillStyle = "#000";
+  graphics.mapctx.fillRect(
+    0,
+    0,
+    graphics.mapcanvas.width,
+    graphics.mapcanvas.height
+  );
+
+  graphics.drawMap();
+
+  enemy.enemies = [];
+  enemy.spawnEnemies();
+
+  graphics.levelElement.innerHTML = "you're in level " + graphics.level;
+
+  player.health = 100;
+  player.updateHealth();
 });
 
 function gameLoad() {

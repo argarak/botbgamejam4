@@ -10,11 +10,11 @@ oh btw the game crashes when you reach level 35
 
 ** really have to be done by sunday 8pm todos
 
-- [ ] make the dumb progression less dumb
-
-- [ ] background music and sfx
-- [ ] enemy spawning per map
-- [ ] being able to progress to another map
+- [ ] progress bar not actually showing progress to next level
+- [X] make the dumb progression less dumb
+- [X] background music and sfx
+- [X] enemy spawning per map
+- [X] being able to progress to another map
 - [ ] skill points and more things to add points onto
 - [ ] ending?
 - [ ] progression per level

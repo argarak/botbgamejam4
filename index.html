@@ -777,6 +777,7 @@
              background: #000;
              
              font-family: "mainfont";
+
              font-size: 14px;
          }
 
@@ -806,7 +807,9 @@
              color: #fff;
          }
 
-         #roomName {
+         #roomName,
+         #enemiesLeft,
+         #dungeonLevel {
              color: #fff;
          }
 
@@ -819,7 +822,12 @@
              background-color: rgba(0,0,0,0.5);
          }
 
-         #mapButton {
+         #levelButton {
+             display: none;
+         }
+
+         #mapButton,
+         #levelButton {
              font-family: "mainfont";
              font-size: 14px;
              margin-top: 20px;
@@ -832,7 +840,8 @@
              transition: background-color 0.2s ease;
          }
 
-         #mapButton:hover {
+         #mapButton:hover,
+         #levelButton:hover {
              background-color: #222;
          }
 
@@ -876,7 +885,7 @@
              left: 0;
              top: 20vh;
              width: 200px;
-             background-color: rgba(0,0,0,0.5);
+             background-color: rgba(0,0,0,0);
              color: #fff;
              padding: 20px;
          }
@@ -925,11 +934,18 @@
              background-color: #111;
              color: #fff;
          }
+
+         #buttonContainer {
+             display: flex;
+         }
         </style>
         <title>welcome to the game!</title>
     </head>
 
     <body>
+        <audio id="ambience" src="ambience.mp3" loop></audio>
+      <audio id="killSound" src="kill.mp3"></audio>
+      <audio id="hitSound" src="hit.mp3"></audio>
         <div id="class">
             <h3>player class</h3>
             <div id="classOptions">
@@ -993,8 +1009,13 @@
             <div id="speedY"></div>
             <div id="bounds"></div>
         </div>
+        <div id="dungeonLevel">you're in level 0</div>
         <div id="roomName">room of unknown</div>
-        <button id="mapButton">open map</button>
+        <div id="enemiesLeft">0 enemies left</div>
+        <div id="buttonContainer">
+            <button id="mapButton">open map</button>
+            <button id="levelButton">next level</button>
+        </div>
         <script src="botbicon.js"></script>
         <script src="roomgen.js"></script>
         <script src="main.js"></script>
