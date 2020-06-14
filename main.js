@@ -313,6 +313,9 @@ class Player {
     this.endingDisplayed = false;
     this.endingElement = document.getElementById("ending");
 
+    this.gameOverElement = document.getElementById("gameOver");
+    this.dead = false;
+
     this.debug = false;
   }
 
@@ -481,8 +484,20 @@ class Player {
   }
 
   updateHealth() {
-    this.healthTextElement.innerHTML = "health: " + this.health + "/100";
-    this.healthProgressElement.value = this.health;
+    if (this.health <= 0 && !this.dead) {
+      // you became kill
+      this.dead = true;
+
+      this.gameOverElement.style.display = "block";
+    }
+
+    if (this.health >= 0) {
+      this.healthTextElement.innerHTML = "health: " + this.health + "/100";
+      this.healthProgressElement.value = this.health;
+    } else {
+      this.healthTextElement.innerHTML = "health: 0/100";
+      this.healthProgressElement.value = 0;
+    }
   }
 
   updateXp() {
@@ -513,13 +528,13 @@ class Player {
 
   weaponDraw() {
     let weaponIcon = null;
-    if (player.playerClass === "n00b") {
+    if (this.playerClass === "n00b" || this.dead) {
       return;
-    } else if (player.playerClass === "hostist") {
+    } else if (this.playerClass === "hostist") {
       weaponIcon = botbIcon.getIcon("battle");
-    } else if (player.playerClass === "grafxicist") {
+    } else if (this.playerClass === "grafxicist") {
       weaponIcon = botbIcon.getIcon("pencil");
-    } else if (player.playerClass === "chipist") {
+    } else if (this.playerClass === "chipist") {
       weaponIcon = botbIcon.getIcon("wrench");
     }
     graphics.ctx.setTransform(
@@ -615,6 +630,9 @@ class Player {
   }
 
   draw() {
+    if (this.dead) {
+      return;
+    }
     if (this.speedX !== 0 || this.speedY !== 0) {
       graphics.updateRoom();
     }
@@ -1319,6 +1337,72 @@ function gameLoad() {
 
   document.getElementById("continueButton").addEventListener("click", e => {
     player.endingElement.style.display = "none";
+  });
+
+  document.getElementById("retryButton").addEventListener("click", e => {
+    player.gameOverElement.style.display = "none";
+
+    // place player at default location
+    player.xpos = 148 * 16;
+    player.ypos = 63 * 16;
+
+    graphics.rooms = roomgen.generate();
+
+    graphics.mapctx.fillStyle = "#000";
+    graphics.mapctx.fillRect(
+      0,
+      0,
+      graphics.mapcanvas.width,
+      graphics.mapcanvas.height
+    );
+
+    graphics.drawMap();
+
+    enemy.enemies = [];
+    enemy.spawnEnemies();
+
+    graphics.levelElement.innerHTML = "you're in level " + graphics.level;
+
+    player.dead = false;
+    player.health = 100;
+    player.updateHealth();
+  });
+
+  document.getElementById("restartButton").addEventListener("click", e => {
+    graphics.level = 0;
+    player.xp = 0;
+    player.level = 0;
+    player.playerClass = "n00b";
+    player.updateXp();
+
+    document.getElementById("class").style.display = "block";
+    player.gameOverElement.style.display = "none";
+
+    // place player at default location
+    player.xpos = 148 * 16;
+    player.ypos = 63 * 16;
+
+    graphics.rooms = roomgen.generate();
+
+    graphics.mapctx.fillStyle = "#000";
+    graphics.mapctx.fillRect(
+      0,
+      0,
+      graphics.mapcanvas.width,
+      graphics.mapcanvas.height
+    );
+
+    graphics.drawMap();
+
+    enemy.enemies = [];
+    enemy.spawnEnemies();
+
+    graphics.levelElement.innerHTML = "you're in level " + graphics.level;
+
+    player.icon = botbIcon.getIcon("n00b");
+    player.dead = false;
+    player.health = 100;
+    player.updateHealth();
   });
 
   document.getElementById("mapCanvas").addEventListener("click", e => {

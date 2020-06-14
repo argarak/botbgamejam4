@@ -828,7 +828,9 @@
 
          #mapButton,
          #levelButton,
-         #continueButton {
+         #continueButton,
+         #retryButton,
+         #restartButton{
              font-family: "mainfont";
              font-size: 14px;
              margin-top: 20px;
@@ -940,7 +942,8 @@
              display: flex;
          }
 
-         #ending {
+         #ending,
+         #gameOver {
              display: none;
              position: fixed;
              background-color: #272727cc;
@@ -952,6 +955,10 @@
 
              width: 500px;
              height: 150px;
+         }
+
+         #gameOver {
+             height: 250px;
          }
         </style>
         <title>botb.dungeon</title>
@@ -968,6 +975,17 @@
           <p>by becoming level 33, you have achieved the status of grand wizard and the omnipotent baron has granted you the choice to escape the endless dungeon... or you can continue...</p>
 
           <button id="continueButton">continue</button>
+      </div>
+
+      <div id="gameOver">
+          <h3>game over</h3>
+
+          <p>you have become victim to the bugs, rats, bats, pumpkings, mummis, zombis and ghosts of this dungeon. you can retry a completely new level by pressing "retry level", keeping your currenty xp and level.</p>
+
+          <p>or you can press the "restart game" button to restart the entire game from the beginning</p>
+
+          <button id="retryButton">retry level</button>
+          <button id="restartButton">restart game</button>
       </div>
 
         <div id="class">

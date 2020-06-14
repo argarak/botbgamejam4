@@ -17,14 +17,14 @@ oh btw the game crashes when you reach level 35
 - [X] being able to progress to another map
 - [X] ending?
 - [ ] saving player in browser
-- [ ] what do when player is ded??
+- [X] what do when player is ded??
 - [X] disable weapon for n00b class, give each class some unique weapon
 
 ** botb description
 
 you have been banished by the omnipotent baron to the dungeons of botb, filled with bugs, zombis, mummis and other hostile creatures, you may not leave the endless dungeon unless you become the grand wizard (i.e. get to level 33)
 
-use the WASD layout (or equivalent for your keyboard layout) to move your character, and use the mouse to move your weapon, click to fire. take note that you can hold down the left mouse key to auto-fire your weapon. feel free to resize your screen (with ctrl+scrollwheel or ctrl+plus and ctrl+minus) if it's a bit too small.
+use the WASD layout (or equivalent for your keyboard layout) to move your character, and use the mouse to move your weapon, click to fire. take note that you can hold down the left mouse key to auto-fire your weapon. this game is best played using a mouse and keyboard. feel free to resize your screen (with ctrl+scrollwheel or ctrl+plus and ctrl+minus) if it's a bit too small.
 
 every level in the dungeon is procedurally generated. you can progress to the next level once you have defeated all enemies on your current level, at this point a button will appear at the bottom of the screen allowing you to go down to the next level of the dungeon.
 
