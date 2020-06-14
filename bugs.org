@@ -15,9 +15,7 @@ oh btw the game crashes when you reach level 35
 - [X] background music and sfx
 - [X] enemy spawning per map
 - [X] being able to progress to another map
-- [ ] skill points and more things to add points onto
 - [X] ending?
-- [ ] progression per level
 - [ ] saving player in browser
 - [ ] what do when player is ded??
-- [ ] disable weapon for n00b class, give each class some unique weapon
+- [X] disable weapon for n00b class, give each class some unique weapon

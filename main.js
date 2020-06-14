@@ -512,6 +512,16 @@ class Player {
   }
 
   weaponDraw() {
+    let weaponIcon = null;
+    if (player.playerClass === "n00b") {
+      return;
+    } else if (player.playerClass === "hostist") {
+      weaponIcon = botbIcon.getIcon("battle");
+    } else if (player.playerClass === "grafxicist") {
+      weaponIcon = botbIcon.getIcon("pencil");
+    } else if (player.playerClass === "chipist") {
+      weaponIcon = botbIcon.getIcon("wrench");
+    }
     graphics.ctx.setTransform(
       1,
       0,
@@ -600,11 +610,7 @@ class Player {
       this.weaponFire = true;
     }
 
-    graphics.drawIcon(
-      botbIcon.getIcon("battle"),
-      this.meleeDistance,
-      this.meleeDistance
-    );
+    graphics.drawIcon(weaponIcon, this.meleeDistance, this.meleeDistance);
     graphics.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
