@@ -506,7 +506,7 @@ class Player {
     } else {
       this.levelProgressElement.value =
         (this.xp - this.xpLevels[this.level]) /
-        this.xpLevels[this.level + 1] *
+        (this.xpLevels[this.level + 1] - this.xpLevels[this.level]) *
         100;
     }
   }

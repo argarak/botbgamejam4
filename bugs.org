@@ -10,7 +10,7 @@ oh btw the game crashes when you reach level 35
 
 ** really have to be done by sunday 8pm todos
 
-- [ ] progress bar not actually showing progress to next level
+- [X] progress bar not actually showing progress to next level
 - [X] make the dumb progression less dumb
 - [X] background music and sfx
 - [X] enemy spawning per map
@@ -19,3 +19,26 @@ oh btw the game crashes when you reach level 35
 - [ ] saving player in browser
 - [ ] what do when player is ded??
 - [X] disable weapon for n00b class, give each class some unique weapon
+
+** botb description
+
+you have been banished by the omnipotent baron to the dungeons of botb, filled with bugs, zombis, mummis and other hostile creatures, you may not leave the endless dungeon unless you become the grand wizard (i.e. get to level 33)
+
+use the WASD layout (or equivalent for your keyboard layout) to move your character, and use the mouse to move your weapon, click to fire. take note that you can hold down the left mouse key to auto-fire your weapon. feel free to resize your screen (with ctrl+scrollwheel or ctrl+plus and ctrl+minus) if it's a bit too small.
+
+every level in the dungeon is procedurally generated. you can progress to the next level once you have defeated all enemies on your current level, at this point a button will appear at the bottom of the screen allowing you to go down to the next level of the dungeon.
+
+more enemies spawn as you continue down into each proceeding level, including a greater variety of enemies:
+
+level 0: bugs and rats
+level 1: pumpkings and bats
+level 2: zombis
+level 3: mummis and ghosts
+
+(this includes 3 "unique" enemy AI)
+
+currently there are 3 different classes you can choose from: hostist, grafxicist and chipist though in the current version of this game these classes are purely cosmetic and don't offer unique abilities/weapons. however, make sure to choose one at the beginning of the game, as the initial n00b class doesn't have any weapon!
+
+the game actually uses a xp and level system which is similar to the botb level system, however I added an extra bonus per level so that you can progress through the game pretty quickly (it only takes about 3-4 levels in my testing). if you try and get to level 35 somehow the game will crash (I left that in because I thought it was funny)
+
+read the bugs.txt file for minor game bugs to look out for while playing
