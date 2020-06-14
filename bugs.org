@@ -1,11 +1,16 @@
+oh btw the game crashes when you reach level 35
+
 ** current list of minor bugs:
 
 - players don't take damage unless player is on enemy tile during enemy activation tick
 - knockback can knock enemies into the void
 - players collide with corners between 2+ rooms, probably wontfix
 - if pushing up against a wall and moving in the x axis, it is possible to get stuck in the edge between rooms
+- old non-format trophy tiles are called "silver/gold/bronze 0"
 
 ** really have to be done by sunday 8pm todos
+
+- [ ] make the dumb progression less dumb
 
 - [ ] background music and sfx
 - [ ] enemy spawning per map
@@ -15,3 +20,4 @@
 - [ ] progression per level
 - [ ] saving player in browser
 - [ ] what do when player is ded??
+- [ ] disable weapon for n00b class, give each class some unique weapon

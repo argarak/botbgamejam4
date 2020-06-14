@@ -26,6 +26,7 @@ class Graphics {
     this.lightMapOffset = 2;
 
     this.rooms = roomgen.generate();
+    this.level = 0;
 
     this.lightsources = [
       {
@@ -539,10 +540,14 @@ class Player {
         enemy.enemies[enemyIndex].health -= this.weaponDamage;
 
         if (enemy.enemies[enemyIndex].health < 1) {
-          this.xp += enemy.getXp(enemy.enemies[enemyIndex].type);
+          let beforeXp = this.xp;
+          //this.xp += enemy.getXp(enemy.enemies[enemyIndex].type);
 
           // calculate xp level bonus
-          this.xp = this.xp * Math.pow(Math.E, (this.level - 7) / 20);
+          this.xp +=
+            enemy.getXp(enemy.enemies[enemyIndex].type) *
+            Math.pow(Math.E, this.level / 6);
+          console.log("you just got " + (this.xp - beforeXp) + " xp");
           this.updateXp();
         }
 
@@ -629,6 +634,11 @@ class Enemy {
       activationDistance: 300,
       maxHealth: 200
     };
+    this.ghost = {
+      icon: botbIcon.getIcon("defle"),
+      activationDistance: 500,
+      maxHealth: 100
+    };
     this.tick = 0;
     this.maxTick = 1000;
     this.bugTickMultiple = () => {
@@ -640,80 +650,121 @@ class Enemy {
     this.pumpkingTickMultiple = () => {
       return this.randint(25, 35);
     };
-    this.enemies = [
-      // {
-      //   type: this.bug,
-      //   tileX: 149,
-      //   tileY: 61,
-      //   health: this.bug.maxHealth,
-      //   activateTickMultiple: this.bugTickMultiple(),
-      //   visitedTiles: []
-      // },
-      // {
-      //   type: this.rat,
-      //   tileX: 153,
-      //   tileY: 61,
-      //   health: this.rat.maxHealth,
-      //   activateTickMultiple: this.ratTickMultiple(),
-      //   visitedTiles: []
-      // },
-      // {
-      //   type: this.pumpking,
-      //   tileX: 155,
-      //   tileY: 61,
-      //   health: this.pumpking.maxHealth,
-      //   activateTickMultiple: this.ratTickMultiple(),
-      //   visitedTiles: []
-      // },
-      // {
-      //   type: this.pumpking,
-      //   tileX: 157,
-      //   tileY: 61,
-      //   health: this.pumpking.maxHealth,
-      //   activateTickMultiple: this.pumpkingTickMultiple(),
-      //   visitedTiles: []
-      // },
-      // {
-      //   type: this.bat,
-      //   tileX: 159,
-      //   tileY: 61,
-      //   health: this.bat.maxHealth,
-      //   activateTickMultiple: this.batTickMultiple(),
-      //   visitedTiles: []
-      // },
-      {
-        type: this.mummi,
-        tileX: 159,
-        tileY: 61,
-        health: this.mummi.maxHealth,
-        activateTickMultiple: 0,
-        visitedTiles: []
-      },
-      {
-        type: this.mummi,
-        tileX: 159,
-        tileY: 63,
-        health: this.mummi.maxHealth,
-        activateTickMultiple: 0,
-        visitedTiles: []
-      },
-      {
-        type: this.mummi,
-        tileX: 159,
-        tileY: 65,
-        health: this.mummi.maxHealth,
-        activateTickMultiple: 0,
-        visitedTiles: []
-      },
-      {
-        type: this.zombi,
-        tileX: 159,
-        tileY: 65,
-        health: this.zombi.maxHealth,
-        activateTickMultiple: 0,
-        visitedTiles: []
+    this.ghostTickMultiple = () => {
+      return this.randint(5, 10);
+    };
+    this.enemies = [];
+  }
+
+  spawnEnemies() {
+    for (let room of graphics.rooms) {
+      // all levels spawn bugs and rats
+
+      let random1 = this.randint(0, 2);
+      if (random1 == 0) {
+        for (let bug = 0; bug < this.randint(0, 2 + graphics.level); bug++) {
+          let bugobj = {
+            type: this.bug,
+            tileX: room.startTileX + this.randint(1, room.width - 1),
+            tileY: room.startTileY + this.randint(1, room.height - 1),
+            health: this.bug.maxHealth,
+            activateTickMultiple: this.bugTickMultiple(),
+            visitedTiles: []
+          };
+          this.enemies.push(bugobj);
+        }
+      } else if (random1 == 1) {
+        for (let rat = 0; rat < this.randint(0, 2 + graphics.level); rat++) {
+          let bugobj = {
+            type: this.rat,
+            tileX: room.startTileX + this.randint(1, room.width - 1),
+            tileY: room.startTileY + this.randint(1, room.height - 1),
+            health: this.rat.maxHealth,
+            activateTickMultiple: this.ratTickMultiple(),
+            visitedTiles: []
+          };
+          this.enemies.push(bugobj);
+        }
       }
-    ];
+      if (graphics.level > 0) {
+        // start spawning bats and pumpkings
+        let random2 = this.randint(0, 4);
+        if (random2 == 0) {
+          // spawn one or two pumpkings
+          for (let pumpking = 0; pumpking < this.randint(0, 2); pumpking++) {
+            let bugobj = {
+              type: this.pumpking,
+              tileX: room.startTileX + this.randint(1, room.width - 1),
+              tileY: room.startTileY + this.randint(1, room.height - 1),
+              health: this.pumpking.maxHealth,
+              activateTickMultiple: this.pumpkingTickMultiple(),
+              visitedTiles: []
+            };
+            this.enemies.push(bugobj);
+          }
+        } else if (random2 == 4) {
+          // only spawn one evil bat because they're really evil and
+          // annoying wow
+          for (let bat = 0; bat < this.randint(0, 1); bat++) {
+            let bugobj = {
+              type: this.bat,
+              tileX: room.startTileX + this.randint(1, room.width - 1),
+              tileY: room.startTileY + this.randint(1, room.height - 1),
+              health: this.bat.maxHealth,
+              activateTickMultiple: 0,
+              visitedTiles: []
+            };
+            this.enemies.push(bugobj);
+          }
+        }
+      }
+      if (graphics.level > 1) {
+        // start spawning zombis
+        let random3 = this.randint(0, 3);
+        if (random3 == 3) {
+          for (let zombi = 0; zombi < this.randint(0, 3); zombi++) {
+            let bugobj = {
+              type: this.zombi,
+              tileX: room.startTileX + this.randint(1, room.width - 1),
+              tileY: room.startTileY + this.randint(1, room.height - 1),
+              health: this.zombi.maxHealth,
+              activateTickMultiple: 0,
+              visitedTiles: []
+            };
+            this.enemies.push(bugobj);
+          }
+        }
+      }
+      if (graphics.level > 2) {
+        // start spawning mummis and ghosts
+        let random3 = this.randint(0, 5);
+        if (random3 == 5) {
+          for (let mummi = 0; mummi < this.randint(0, 1); mummi++) {
+            let bugobj = {
+              type: this.mummi,
+              tileX: room.startTileX + this.randint(1, room.width - 1),
+              tileY: room.startTileY + this.randint(1, room.height - 1),
+              health: this.mummi.maxHealth,
+              activateTickMultiple: 0,
+              visitedTiles: []
+            };
+            this.enemies.push(bugobj);
+          }
+        } else if (random3 == 4) {
+          for (let ghost = 0; ghost < this.randint(0, 1); ghost++) {
+            let bugobj = {
+              type: this.ghost,
+              tileX: room.startTileX + this.randint(1, room.width - 1),
+              tileY: room.startTileY + this.randint(1, room.height - 1),
+              health: this.ghost.maxHealth,
+              activateTickMultiple: this.ghostTickMultiple(),
+              visitedTiles: []
+            };
+            this.enemies.push(bugobj);
+          }
+        }
+      }
+    }
   }
 
   getXp(type) {
@@ -729,6 +780,8 @@ class Enemy {
       case this.mummi:
         return this.randint(50, 60);
       case this.zombi:
+        return this.randint(40, 50);
+      case this.ghost:
         return this.randint(40, 50);
     }
     return 0;
@@ -747,6 +800,8 @@ class Enemy {
       case this.mummi:
       case this.zombi:
         return 15;
+      case this.ghost:
+        return 2;
     }
     return 0;
   }
@@ -970,6 +1025,38 @@ class Enemy {
     enemy.tileY = validTiles[minTileIndex][1];
   }
 
+  // simple "ghost" ai that can go through anything as long
+  // as it eventually gets to the player
+  ghostAI(enemy) {
+    let tileX = enemy.tileX;
+    let tileY = enemy.tileY;
+
+    let distance = this.distanceToPlayer(tileX, tileY);
+
+    if (tileX == player.nearestTileX && tileY == player.nearestTileY) {
+      player.health -= this.getDamage(enemy.type);
+      player.updateHealth();
+    }
+
+    if (distance < 10) {
+      // player get hurt
+      return;
+    }
+
+    if (enemy.tileX > player.nearestTileX) {
+      enemy.tileX--;
+    }
+    if (enemy.tileX < player.nearestTileX) {
+      enemy.tileX++;
+    }
+    if (enemy.tileY > player.nearestTileY) {
+      enemy.tileY--;
+    }
+    if (enemy.tileY < player.nearestTileY) {
+      enemy.tileY++;
+    }
+  }
+
   handleEnemyAI(enemy) {
     if (enemy.type == this.bat) {
       if (this.randint(0, 1) == 0) {
@@ -1017,6 +1104,10 @@ class Enemy {
         break;
       case this.bat:
         this.batAI(enemy);
+        break;
+      case this.ghost:
+        this.ghostAI(enemy);
+        break;
     }
   }
 
@@ -1133,6 +1224,7 @@ function gameLoad() {
   graphics.drawMap();
   player.updateXp();
   player.updateHealth();
+  enemy.spawnEnemies();
 
   document.getElementById("mapCanvas").addEventListener("click", e => {
     e.target.style.display = "none";
